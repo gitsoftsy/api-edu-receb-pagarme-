@@ -29,6 +29,7 @@ public class UfService {
 		return new UfDTO(uf);
 	}
 
+	
 	@Transactional
 	public UfDTO salvar(UfDTO dto) {
 		validarUf(dto.getNomeUf());

@@ -19,22 +19,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import br.com.softsy.pagarme.dto.OcupacaoDTO;
-import br.com.softsy.pagarme.service.OcupacaoService;
+import br.com.softsy.pagarme.dto.TipoEmpresaDTO;
+import br.com.softsy.pagarme.service.TipoEmpresaService;
 
 @RestController
-@RequestMapping("/ocupacoes")
-public class OcupacaoController {
+@RequestMapping("/tipoEmpresa")
+public class TipoEmpresaController {
 
 	@Autowired
-	private OcupacaoService ocupacaoService;
+	private TipoEmpresaService tipoEmpresaService;
 
 	@GetMapping
-	public ResponseEntity<Map<String, List<OcupacaoDTO>>> listar() {
-		List<OcupacaoDTO> ocupacoes = ocupacaoService.listarTudo();
+	public ResponseEntity<Map<String, List<TipoEmpresaDTO>>> listar() {
+		List<TipoEmpresaDTO> tiposEmpresas = tipoEmpresaService.listarTudo();
 
-		Map<String, List<OcupacaoDTO>> response = new HashMap<>();
-		response.put("ocupacoes", ocupacoes);
+		Map<String, List<TipoEmpresaDTO>> response = new HashMap<>();
+		response.put("tiposEmpresa", tiposEmpresas);
 
 		return ResponseEntity.ok(response);
 	}
