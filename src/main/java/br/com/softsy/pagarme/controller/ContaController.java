@@ -1,0 +1,92 @@
+package br.com.softsy.pagarme.controller;
+
+import java.io.IOException;
+import java.net.URI;
+import java.util.List;
+
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import br.com.softsy.pagarme.dto.CadastroContaDTO;
+import br.com.softsy.pagarme.dto.ContaDTO;
+//import br.com.softsy.pagarme.model.CaminhoImagemRequest;
+import br.com.softsy.pagarme.model.Conta;
+import br.com.softsy.pagarme.service.ContaService;
+
+@RestController
+@RequestMapping("/conta")
+public class ContaController {
+	
+	@Autowired ContaService service;
+	
+	@GetMapping
+	public ResponseEntity<List<Conta>> listar(){
+		return ResponseEntity.ok(service.listarTudo());
+	}
+	
+	@GetMapping("/{idConta}")
+	public ResponseEntity<ContaDTO> buscarPorId(@PathVariable Long idConta){
+		return ResponseEntity.ok(service.buscarPorId(idConta));
+	}
+	
+	@GetMapping("/{id}/logo")
+    public ResponseEntity<String> getLogoById(@PathVariable("id") Long id) throws IOException {
+		String logo = service.getLogoById(id);
+
+       return ResponseEntity.ok(logo);
+    }
+	
+	@PostMapping
+	public ResponseEntity<CadastroContaDTO> cadastrar(@RequestBody @Valid CadastroContaDTO dto) throws IOException{
+		CadastroContaDTO contaDTO = service.salvar(dto);
+		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+				.buildAndExpand(contaDTO.getIdConta()).toUri();
+		return ResponseEntity.created(uri).body(contaDTO);
+	}
+	
+	@PutMapping
+	public ResponseEntity<?> atualizar(@RequestBody @Valid CadastroContaDTO dto) throws IOException{
+		return ResponseEntity.ok(service.atualizar(dto));
+	}
+	
+	@PutMapping("/imagem/{id}")
+    public ResponseEntity<ContaDTO> alterarImagemConta(
+            @PathVariable Long id,
+            @RequestBody ContaDTO dto) {
+        
+        try {
+        	ContaDTO contaAtualizada = service.alterarImagemConta(id, dto.getLogoConta());
+            return ResponseEntity.ok(contaAtualizada);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+	
+	@PutMapping("/{idConta}/ativar")
+	public ResponseEntity<?> ativar(@PathVariable Long idConta){
+		service.ativaDesativa('S', idConta);
+		return ResponseEntity.ok().build();	
+	}
+	
+	
+	@PutMapping("/{idConta}/desativar")
+	public ResponseEntity<?> desatviar(@PathVariable Long idConta){
+		service.ativaDesativa('N', idConta);
+		return ResponseEntity.ok().build();
+	}
+
+}
+
