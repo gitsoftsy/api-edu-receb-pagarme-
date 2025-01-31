@@ -36,7 +36,7 @@ public class RecebedorTemp {
 	private Usuario usuario;
 
 	@Column(name = "TIPO_PESSOA", unique = true, length = 2)
-	private Character tipoPessoa;
+	private String tipoPessoa;
 
 	@Column(name = "NOME", unique = true)
 	private String nome;

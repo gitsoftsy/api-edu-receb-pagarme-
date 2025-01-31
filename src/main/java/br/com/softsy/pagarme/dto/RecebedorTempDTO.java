@@ -70,7 +70,7 @@ public class RecebedorTempDTO {
         this.idConta = (recebedorTemp.getConta() != null) ? recebedorTemp.getConta().getIdConta() : null;
         this.dataCadastro = recebedorTemp.getDataCadastro();
         this.idUsuario = (recebedorTemp.getUsuario() != null) ? recebedorTemp.getUsuario().getIdUsuario() : null;
-        this.tipoPessoa = (recebedorTemp.getTipoPessoa() != null) ? recebedorTemp.getTipoPessoa().toString() : null;
+        this.tipoPessoa = recebedorTemp.getTipoPessoa();
         this.nome = recebedorTemp.getNome();
         this.documento = recebedorTemp.getDocumento();
         this.email = recebedorTemp.getEmail();
