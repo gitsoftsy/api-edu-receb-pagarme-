@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import br.com.softsy.pagarme.dto.RecebedorTempDTO;
@@ -24,31 +25,35 @@ public class RecebedorTempDTO {
 
 	private LocalDateTime dataCadastro;
 
-	@NotNull
+	@NotNull(message = "O campo 'idUsuario' é obrigatório.")
 	private Long idUsuario;
 
 	@NotBlank(message = "O campo 'tipoPessoa' é obrigatório e não pode estar vazio.")
+	@Pattern(regexp = "^(PF|PJ)$", message = "O campo 'tipoPessoa' deve ser 'PF' para Pessoa Física ou 'PJ' para Pessoa Jurídica.")
 	private String tipoPessoa;
 
-	@NotNull
+	@NotBlank(message = "O campo 'nome' é obrigatório e não pode estar vazio.")
 	private String nome;
 
-	@NotNull
-	@Size(max = 14)
+	@NotBlank(message = "O campo 'documento' é obrigatório e não pode estar vazio.")
+	@Size(max = 14, message = "O campo 'documento' deve ter no máximo 14 caracteres.")
 	private String documento;
 
-	@NotNull
+
+	@NotBlank(message = "O campo 'email' é obrigatório e não pode estar vazio.")
 	private String email;
 
 	private String senha;
 
 	private Character transfAutomatica;
 
+	@NotNull(message = "O campo 'transfIntervalo' é obrigatório.")
 	private Character transfIntervalo;
+
 
 	private Integer transfDia;
 
-	@NotNull
+	@NotNull(message = "O campo 'antecipAut' é obrigatório.")
 	private Character antecipAut;
 
 	private Character antecipTp;

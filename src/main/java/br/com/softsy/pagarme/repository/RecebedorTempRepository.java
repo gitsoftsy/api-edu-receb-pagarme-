@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 
 import br.com.softsy.pagarme.model.RecebedorTemp;
 
-
 @Repository
 public interface RecebedorTempRepository extends JpaRepository<RecebedorTemp, Long> {
 	List<RecebedorTemp> findByTipoPessoa(Character tipoPessoa);
@@ -21,5 +20,7 @@ public interface RecebedorTempRepository extends JpaRepository<RecebedorTemp, Lo
 			@Param("p_TRANSF_AUTOMATICA") Character transfAutomatica,
 			@Param("p_TRANSF_INTERVALO") Character transfIntervalo, @Param("p_TRANSF_DIA") Integer transfDia,
 			@Param("p_ANTECIP_AUT") Character antecipAut);
+
+	RecebedorTemp findTopByOrderByIdRecebedorTempDesc();
 
 }

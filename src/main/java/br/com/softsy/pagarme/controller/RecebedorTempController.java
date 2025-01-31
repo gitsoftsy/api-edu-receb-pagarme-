@@ -33,52 +33,10 @@ public class RecebedorTempController {
 
 	@GetMapping
 	public ResponseEntity<Map<String, Object>> listar() {
-
+		
 		List<RecebedorTemp> lista = service.listarTudo();
 
-		List<Map<String, Object>> respostaFormatada = lista.stream().map(recebedor -> {
-			Map<String, Object> map = new LinkedHashMap<>();
-			map.put("idRecebedorTemp", recebedor.getIdRecebedorTemp());
-			map.put("nome", recebedor.getNome());
-			map.put("documento", recebedor.getDocumento());
-			map.put("email", recebedor.getEmail());
-			map.put("tipoPessoa", recebedor.getTipoPessoa());
-			map.put("dataCadastro", recebedor.getDataCadastro());
-
-			Map<String, Object> transferencias = new LinkedHashMap<>();
-			transferencias.put("automatica", recebedor.getTransfAutomatica());
-			transferencias.put("intervalo", recebedor.getTransfIntervalo());
-			transferencias.put("dia", recebedor.getTransfDia());
-			map.put("transferencias", transferencias);
-
-			Map<String, Object> antecipacao = new LinkedHashMap<>();
-			antecipacao.put("autorizada", recebedor.getAntecipAut());
-			antecipacao.put("tipo", recebedor.getAntecipTp());
-			antecipacao.put("volume", recebedor.getAntecipVolume());
-			antecipacao.put("dias", recebedor.getAntecipDias());
-			antecipacao.put("delay", recebedor.getAntecipDelay());
-			map.put("antecipacao", antecipacao);
-
-			if (recebedor.getConta() != null) {
-				Map<String, Object> conta = new LinkedHashMap<>();
-				conta.put("id", recebedor.getConta().getIdConta());
-				conta.put("nome", recebedor.getConta().getConta());
-				conta.put("tipo", recebedor.getConta().getTipoConta());
-				conta.put("cnpj", recebedor.getConta().getCnpj());
-				conta.put("uf", recebedor.getConta().getUf());
-				map.put("conta", conta);
-			}
-
-			if (recebedor.getUsuario() != null) {
-				Map<String, Object> usuario = new LinkedHashMap<>();
-				usuario.put("id", recebedor.getUsuario().getIdUsuario());
-				usuario.put("nome", recebedor.getUsuario().getNomeCompleto());
-				usuario.put("email", recebedor.getUsuario().getEmail());
-				map.put("usuario", usuario);
-			}
-
-			return map;
-		}).toList();
+		List<Map<String, Object>> respostaFormatada = lista.stream().map(service::formatarRecebedorTemp).toList();
 
 		Map<String, Object> respostaFinal = new LinkedHashMap<>();
 		respostaFinal.put("mensagem", "Dados encontrados:");
@@ -88,13 +46,19 @@ public class RecebedorTempController {
 		return ResponseEntity.ok(respostaFinal);
 	}
 
-	// teste
 	@PostMapping("inserir")
-	public ResponseEntity<Void> inserirRecebedorTemp(@RequestHeader("idConta") Long idConta,
+	public ResponseEntity<Map<String, Object>> inserirRecebedorTemp(@RequestHeader("idConta") Long idConta,
 			@Valid @RequestBody RecebedorTempDTO recebedorTempoDTO) {
 
 		recebedorTempoDTO.setIdConta(idConta);
-		service.inserirRecebedorTemp(recebedorTempoDTO);
-		return ResponseEntity.ok().build();
+		RecebedorTemp recebedorCriado = service.inserirRecebedorTemp(recebedorTempoDTO);
+
+		Map<String, Object> respostaFinal = new LinkedHashMap<>();
+		respostaFinal.put("mensagem", "Recebedor inserido com sucesso!");
+		respostaFinal.put("quantidade", 1);
+		respostaFinal.put("dados", List.of(service.formatarRecebedorTemp(recebedorCriado)));
+
+		return ResponseEntity.ok(respostaFinal);
 	}
+
 }
