@@ -8,6 +8,7 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import br.com.softsy.pagarme.dto.RecebedorTempDTO;
+import br.com.softsy.pagarme.model.Ocupacao;
 import br.com.softsy.pagarme.model.RecebedorTemp;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -63,5 +64,29 @@ public class RecebedorTempDTO {
 	private Integer antecipDias;
 
 	private String antecipDelay;
+	
+	public RecebedorTempDTO(RecebedorTemp recebedorTemp) {
+		this.idRecebedorTemp = recebedorTemp.getIdRecebedorTemp();
+        this.idConta = (recebedorTemp.getConta() != null) ? recebedorTemp.getConta().getIdConta() : null;
+        this.dataCadastro = recebedorTemp.getDataCadastro();
+        this.idUsuario = (recebedorTemp.getUsuario() != null) ? recebedorTemp.getUsuario().getIdUsuario() : null;
+        this.tipoPessoa = (recebedorTemp.getTipoPessoa() != null) ? recebedorTemp.getTipoPessoa().toString() : null;
+        this.nome = recebedorTemp.getNome();
+        this.documento = recebedorTemp.getDocumento();
+        this.email = recebedorTemp.getEmail();
+        this.senha = null; 
 
+        this.transfAutomatica = recebedorTemp.getTransfAutomatica();
+        this.transfIntervalo = recebedorTemp.getTransfIntervalo();
+        this.transfDia = recebedorTemp.getTransfDia();
+
+        this.antecipAut = recebedorTemp.getAntecipAut();
+        this.antecipTp = recebedorTemp.getAntecipTp();
+        this.antecipVolume = recebedorTemp.getAntecipVolume();
+        this.antecipDias = recebedorTemp.getAntecipDias();
+        this.antecipDelay = recebedorTemp.getAntecipDelay();
+
+	}
 }
+
+

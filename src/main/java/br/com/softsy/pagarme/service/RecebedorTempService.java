@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import br.com.softsy.pagarme.infra.exception.UniqueException;
 
 import br.com.softsy.pagarme.model.RecebedorTemp;
+import br.com.softsy.pagarme.repository.ContaRepository;
 import br.com.softsy.pagarme.repository.RecebedorTempRepository;
 import br.com.softsy.pagarme.dto.RecebedorTempDTO;
 import br.com.softsy.pagarme.repository.RecebedorTempRepository;
@@ -22,6 +23,10 @@ public class RecebedorTempService {
 
 	@Autowired
 	private RecebedorTempRepository repository;
+
+	// teste lucas (explicar pra ele ) Importacao da conta
+	@Autowired
+	private ContaRepository contaRepository;
 
 	public List<RecebedorTemp> listarTudo() {
 		return repository.findAll();
@@ -50,17 +55,17 @@ public class RecebedorTempService {
 		map.put("dataCadastro", recebedor.getDataCadastro());
 
 		Map<String, Object> transferencias = new LinkedHashMap<>();
-		transferencias.put("automatica", recebedor.getTransfAutomatica());
-		transferencias.put("intervalo", recebedor.getTransfIntervalo());
-		transferencias.put("dia", recebedor.getTransfDia());
+		transferencias.put("transf_automatica", recebedor.getTransfAutomatica());
+		transferencias.put("transf_intervalo", recebedor.getTransfIntervalo());
+		transferencias.put("transf_dia", recebedor.getTransfDia());
 		map.put("transferencias", transferencias);
 
 		Map<String, Object> antecipacao = new LinkedHashMap<>();
-		antecipacao.put("autorizada", recebedor.getAntecipAut());
-		antecipacao.put("tipo", recebedor.getAntecipTp());
-		antecipacao.put("volume", recebedor.getAntecipVolume());
-		antecipacao.put("dias", recebedor.getAntecipDias());
-		antecipacao.put("delay", recebedor.getAntecipDelay());
+		antecipacao.put("antecip_autorizada", recebedor.getAntecipAut());
+		antecipacao.put("antecip_tipo", recebedor.getAntecipTp());
+		antecipacao.put("antecip_volume", recebedor.getAntecipVolume());
+		antecipacao.put("antecip_dias", recebedor.getAntecipDias());
+		antecipacao.put("antecip_delay", recebedor.getAntecipDelay());
 		map.put("antecipacao", antecipacao);
 
 		if (recebedor.getConta() != null) {
@@ -83,4 +88,18 @@ public class RecebedorTempService {
 
 		return map;
 	}
+
+	public Map<String, Object> obterRecebedorTemp(Long idConta, Long idRecebedorTemp) {
+
+		boolean contaExiste = contaRepository.existsById(idConta);
+		if (!contaExiste) {
+			throw new IllegalArgumentException("Conta inválida ou inexistente.");
+		}
+
+		RecebedorTemp recebedor = repository.findById(idRecebedorTemp)
+				.orElseThrow(() -> new IllegalArgumentException("Recebedor inválido ou inexistente."));
+
+		return formatarRecebedorTemp(recebedor);
+	}
+
 }

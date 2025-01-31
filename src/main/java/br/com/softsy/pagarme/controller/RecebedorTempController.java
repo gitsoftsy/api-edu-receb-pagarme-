@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,7 +34,7 @@ public class RecebedorTempController {
 
 	@GetMapping
 	public ResponseEntity<Map<String, Object>> listar() {
-		
+
 		List<RecebedorTemp> lista = service.listarTudo();
 
 		List<Map<String, Object>> respostaFormatada = lista.stream().map(service::formatarRecebedorTemp).toList();
@@ -59,6 +60,18 @@ public class RecebedorTempController {
 		respostaFinal.put("dados", List.of(service.formatarRecebedorTemp(recebedorCriado)));
 
 		return ResponseEntity.ok(respostaFinal);
+	}
+	
+	//teste lucas
+	@GetMapping("/{idRecebedorTemp}")
+	public ResponseEntity<Map<String, Object>> obterRecebedorTemp(@RequestHeader("idConta") Long idConta,
+			@PathVariable Long idRecebedorTemp) {
+		try {
+			Map<String, Object> resposta = service.obterRecebedorTemp(idConta, idRecebedorTemp);
+			return ResponseEntity.ok(resposta);
+		} catch (IllegalArgumentException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("mensagem", e.getMessage()));
+		}
 	}
 
 }

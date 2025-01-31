@@ -1,6 +1,7 @@
 package br.com.softsy.pagarme.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.query.Procedure;
@@ -11,6 +12,7 @@ import br.com.softsy.pagarme.model.RecebedorTemp;
 
 @Repository
 public interface RecebedorTempRepository extends JpaRepository<RecebedorTemp, Long> {
+	
 	List<RecebedorTemp> findByTipoPessoa(Character tipoPessoa);
 
 	@Procedure(procedureName = "PROC_INSERIR_RECEBEDOR_TEMP")
@@ -22,5 +24,14 @@ public interface RecebedorTempRepository extends JpaRepository<RecebedorTemp, Lo
 			@Param("p_ANTECIP_AUT") Character antecipAut);
 
 	RecebedorTemp findTopByOrderByIdRecebedorTempDesc();
-
+	
+	//testes lucas (explicar pra ele)s
+	
+	// Busca um recebedor temporário pelo ID
+    Optional<RecebedorTemp> findById(Long idRecebedorTemp);
+    
+    // Verifica se a conta existe pelo ID
+    boolean existsById(Long idConta);
+    
+	
 }
