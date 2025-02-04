@@ -24,7 +24,6 @@ public class RecebedorTempService {
 	@Autowired
 	private RecebedorTempRepository repository;
 
-	// teste lucas (explicar pra ele ) Importacao da conta
 	@Autowired
 	private ContaRepository contaRepository;
 
@@ -33,14 +32,20 @@ public class RecebedorTempService {
 	}
 
 	@Transactional
-	public RecebedorTemp inserirRecebedorTemp(RecebedorTempDTO dto) {
+	public RecebedorTemp inserirRecebedorTemp(RecebedorTempDTO recebedorTempDto) {
 
-		Character transfAutomatica = (dto.getTransfAutomatica() != null) ? dto.getTransfAutomatica() : 'S';
-		Character transfIntervalo = (dto.getTransfIntervalo() != null) ? dto.getTransfIntervalo() : 'M';
-		Integer transfDia = (dto.getTransfDia() != null) ? dto.getTransfDia() : 0;
+		Character transfAutomatica = (recebedorTempDto.getTransfAutomatica() != null)
+				? recebedorTempDto.getTransfAutomatica()
+				: 'S';
+		Character transfIntervalo = (recebedorTempDto.getTransfIntervalo() != null)
+				? recebedorTempDto.getTransfIntervalo()
+				: 'M';
+		Integer transfDia = (recebedorTempDto.getTransfDia() != null) ? recebedorTempDto.getTransfDia() : 0;
 
-		repository.inserirRecebedorTemp(dto.getIdConta(), dto.getIdUsuario(), dto.getTipoPessoa(), dto.getNome(),
-				dto.getDocumento(), dto.getEmail(), transfAutomatica, transfIntervalo, transfDia, dto.getAntecipAut());
+		repository.inserirRecebedorTemp(recebedorTempDto.getIdConta(), recebedorTempDto.getIdUsuario(),
+				recebedorTempDto.getTipoPessoa(), recebedorTempDto.getNome(), recebedorTempDto.getDocumento(),
+				recebedorTempDto.getEmail(), transfAutomatica, transfIntervalo, transfDia,
+				recebedorTempDto.getAntecipAut());
 
 		return repository.findTopByOrderByIdRecebedorTempDesc();
 	}

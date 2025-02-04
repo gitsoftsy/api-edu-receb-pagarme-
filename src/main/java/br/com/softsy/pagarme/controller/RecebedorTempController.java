@@ -62,7 +62,7 @@ public class RecebedorTempController {
 		return ResponseEntity.ok(respostaFinal);
 	}
 	
-	//teste lucas
+	
 	@GetMapping("/{idRecebedorTemp}")
 	public ResponseEntity<Map<String, Object>> obterRecebedorTemp(@RequestHeader("idConta") Long idConta,
 			@PathVariable Long idRecebedorTemp) {
