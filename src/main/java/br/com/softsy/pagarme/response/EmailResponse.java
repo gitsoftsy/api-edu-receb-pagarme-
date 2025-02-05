@@ -31,7 +31,7 @@ public class EmailResponse {
     }
 
     public String getTabela() {
-        return tabela;
+        return tabela; 
     }
 
     public void setTabela(String tabela) {
