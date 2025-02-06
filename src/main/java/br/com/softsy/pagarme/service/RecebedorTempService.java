@@ -30,7 +30,7 @@ public class RecebedorTempService {
 	private ContaRepository contaRepository;
 
 	@Autowired
-	private PasswordEncrypt passwordEncrypt; // Injeta a classe de criptografia
+	private PasswordEncrypt passwordEncrypt; 
 
 	public List<RecebedorTemp> listarTudo() {
 		return repository.findAll();
