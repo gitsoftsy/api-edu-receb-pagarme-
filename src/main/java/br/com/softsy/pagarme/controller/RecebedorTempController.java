@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.softsy.pagarme.dto.RecebedorTempDTO;
+import br.com.softsy.pagarme.dto.CadastroRecebedorTempDTO;
 import br.com.softsy.pagarme.model.RecebedorTemp;
 import br.com.softsy.pagarme.service.RecebedorTempService;
 
@@ -50,7 +51,7 @@ public class RecebedorTempController {
 
 	@PostMapping("inserir")
 	public ResponseEntity<Map<String, Object>> inserirRecebedorTemp(@RequestHeader("idConta") Long idConta,
-			@Valid @RequestBody RecebedorTempDTO recebedorTempoDTO) {
+			@Valid @RequestBody CadastroRecebedorTempDTO recebedorTempoDTO) {
 
 		recebedorTempoDTO.setIdConta(idConta);
 		RecebedorTemp recebedorCriado = service.inserirRecebedorTemp(recebedorTempoDTO);

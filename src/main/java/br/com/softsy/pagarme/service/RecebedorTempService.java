@@ -17,8 +17,8 @@ import br.com.softsy.pagarme.infra.exception.UniqueException;
 import br.com.softsy.pagarme.model.RecebedorTemp;
 import br.com.softsy.pagarme.repository.ContaRepository;
 import br.com.softsy.pagarme.repository.RecebedorTempRepository;
-import br.com.softsy.pagarme.dto.RecebedorTempDTO;
-import br.com.softsy.pagarme.repository.RecebedorTempRepository;
+import br.com.softsy.pagarme.dto.CadastroRecebedorTempDTO;
+
 
 @Service
 public class RecebedorTempService {
@@ -37,34 +37,34 @@ public class RecebedorTempService {
 	}
 
 	@Transactional
-	public RecebedorTemp inserirRecebedorTemp(RecebedorTempDTO recebedorTempDto) {
+	public RecebedorTemp inserirRecebedorTemp(CadastroRecebedorTempDTO cadastroRecebedorTempDTO) {
 
-		if (repository.findByDocumento(recebedorTempDto.getDocumento()).isPresent()) {
+		if (repository.findByDocumento(cadastroRecebedorTempDTO.getDocumento()).isPresent()) {
 			throw new UniqueException("Já existe um recebedor com este documento cadastrado.");
 		}
 
-		if (repository.existsByEmail(recebedorTempDto.getEmail())) {
+		if (repository.existsByEmail(cadastroRecebedorTempDTO.getEmail())) {
 			throw new UniqueException("Já existe um recebedor com este e-mail cadastrado.");
 		}
 		
-        String baseSenha = recebedorTempDto.getDocumento().substring(0, Math.min(5, recebedorTempDto.getDocumento().length()));
+        String baseSenha = cadastroRecebedorTempDTO.getDocumento().substring(0, Math.min(5, cadastroRecebedorTempDTO.getDocumento().length()));
         String senhaCriptografada = passwordEncrypt.hashPassword(baseSenha);
 
-		Character transfAutomatica = (recebedorTempDto.getTransfAutomatica() != null)
-				? recebedorTempDto.getTransfAutomatica()
+		Character transfAutomatica = (cadastroRecebedorTempDTO.getTransfAutomatica() != null)
+				? cadastroRecebedorTempDTO.getTransfAutomatica()
 				: 'S';
-		Character transfIntervalo = (recebedorTempDto.getTransfIntervalo() != null)
-				? recebedorTempDto.getTransfIntervalo()
+		Character transfIntervalo = (cadastroRecebedorTempDTO.getTransfIntervalo() != null)
+				? cadastroRecebedorTempDTO.getTransfIntervalo()
 				: 'M';
-		Integer transfDia = (recebedorTempDto.getTransfDia() != null) ? recebedorTempDto.getTransfDia() : 0;
+		Integer transfDia = (cadastroRecebedorTempDTO.getTransfDia() != null) ? cadastroRecebedorTempDTO.getTransfDia() : 0;
 
 		
         repository.inserirRecebedorTemp(
-                recebedorTempDto.getIdConta(), recebedorTempDto.getIdUsuario(),
-                recebedorTempDto.getTipoPessoa(), recebedorTempDto.getNome(),
-                recebedorTempDto.getDocumento(), recebedorTempDto.getEmail(),
+        		cadastroRecebedorTempDTO.getIdConta(), cadastroRecebedorTempDTO.getIdUsuario(),
+        		cadastroRecebedorTempDTO.getTipoPessoa(), cadastroRecebedorTempDTO.getNome(),
+        		cadastroRecebedorTempDTO.getDocumento(), cadastroRecebedorTempDTO.getEmail(),
                 senhaCriptografada,  
-                transfAutomatica, transfIntervalo, transfDia, recebedorTempDto.getAntecipAut()
+                transfAutomatica, transfIntervalo, transfDia, cadastroRecebedorTempDTO.getAntecipAut()
         );
 
 		return repository.findTopByOrderByIdRecebedorTempDesc();
