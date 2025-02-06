@@ -34,6 +34,14 @@ public class RecebedorTempService {
 	@Transactional
 	public RecebedorTemp inserirRecebedorTemp(RecebedorTempDTO recebedorTempDto) {
 
+		if (repository.findByDocumento(recebedorTempDto.getDocumento()).isPresent()) {
+			throw new UniqueException("Já existe um recebedor com este documento cadastrado.");
+		}
+
+		if (repository.existsByEmail(recebedorTempDto.getEmail())) {
+			throw new UniqueException("Já existe um recebedor com este e-mail cadastrado.");
+		}
+
 		Character transfAutomatica = (recebedorTempDto.getTransfAutomatica() != null)
 				? recebedorTempDto.getTransfAutomatica()
 				: 'S';

@@ -21,4 +21,11 @@ public class ValidationExceptionHandler {
 
 		return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
 	}
+
+	@ExceptionHandler(UniqueException.class)
+	public ResponseEntity<Map<String, Object>> handleUniqueException(UniqueException e) {
+		Map<String, Object> resposta = new HashMap<>();
+		resposta.put("mensagem", e.getMessage());
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resposta);
+	}
 }
