@@ -28,5 +28,7 @@ public interface PagarmeRecebedorRepository extends JpaRepository<PagarmeRecebed
             @Param("P_NOME") String nome
                      
     );
+    
+    PagarmeRecebedor findPagarmeRecebedorByEmailAndAtivo(String email, Character ativo);
 
 }

@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import br.com.softsy.pagarme.model.PagarmeRecebedor;
 import br.com.softsy.pagarme.model.PagarmeRecebedorPF;
 import br.com.softsy.pagarme.model.RecebedorTemp;
 
@@ -35,4 +36,6 @@ public interface RecebedorTempRepository extends JpaRepository<RecebedorTemp, Lo
 	Optional<RecebedorTemp> findByEmail(String email);
 	
 	Optional<RecebedorTemp> findByDocumento(String documento);
+	
+	RecebedorTemp findRecebedorTempByEmail(String email);
 }
