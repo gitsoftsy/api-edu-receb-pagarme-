@@ -21,5 +21,7 @@ public interface PagarmeRecebedorPfRepository extends JpaRepository<PagarmeReceb
 
 	Optional<PagarmeRecebedorPF> findByCpf(String cpf);
 	
+    boolean existsByConta_IdConta(Long idConta);
+	
 
 }

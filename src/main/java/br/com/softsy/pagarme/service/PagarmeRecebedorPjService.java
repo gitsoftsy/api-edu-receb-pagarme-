@@ -1,7 +1,5 @@
 package br.com.softsy.pagarme.service;
 
-import javax.transaction.Transactional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +10,7 @@ import br.com.softsy.pagarme.repository.PagarmeRecebedorPjRepository;
 import br.com.softsy.pagarme.repository.PagarmeRecebedorPjRespLegalRepository;
 import br.com.softsy.pagarme.repository.PagarmeRecebedorRepository;
 import br.com.softsy.pagarme.repository.RecebedorTempRepository;
+import br.com.softsy.pagarme.response.CnpjResponse;
 
 @Service
 public class PagarmeRecebedorPjService {
@@ -33,9 +32,21 @@ public class PagarmeRecebedorPjService {
 
 	@Autowired
 	private BancoRepository bancoRepository;
-	
+
 	@Autowired
 	private OcupacaoRepository ocupacaoRepository;
 
+	public CnpjResponse verificarCnpj(String cnpj, Long idConta) {
+		if (!contaRepository.existsById(idConta)) {
+			return new CnpjResponse(false, null, null, "Conta inválida ou inexistente.");
+		}
+		return recebedorTempRepository.findByDocumento(cnpj)
+				.map(recebedorTemp -> new CnpjResponse(true, recebedorTemp.getIdRecebedorTemp(), "TBL_RECEBEDOR_TEMP",
+						"Dados encontrados"))
+				.or(() -> recebedorPjRepository.findByCnpj(cnpj)
+						.map(pagarmeRecebedorPj -> new CnpjResponse(true, pagarmeRecebedorPj.getIdPagarmeRecebedorPj(),
+								"TBL_PAGARME_RECEBEDOR_PJ", "Dados encontrados")))
+				.orElse(new CnpjResponse(false, null, null, "CNPJ não encontrado em nenhuma tabela."));
+	}
 
 }
