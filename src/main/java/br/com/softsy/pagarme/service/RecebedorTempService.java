@@ -1,5 +1,6 @@
 package br.com.softsy.pagarme.service;
 
+
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.softsy.pagarme.infra.config.PasswordEncrypt;
 import br.com.softsy.pagarme.infra.exception.UniqueException;
 
 import br.com.softsy.pagarme.model.RecebedorTemp;
@@ -27,6 +29,9 @@ public class RecebedorTempService {
 	@Autowired
 	private ContaRepository contaRepository;
 
+	@Autowired
+	private PasswordEncrypt passwordEncrypt; // Injeta a classe de criptografia
+
 	public List<RecebedorTemp> listarTudo() {
 		return repository.findAll();
 	}
@@ -41,6 +46,9 @@ public class RecebedorTempService {
 		if (repository.existsByEmail(recebedorTempDto.getEmail())) {
 			throw new UniqueException("Já existe um recebedor com este e-mail cadastrado.");
 		}
+		
+        String baseSenha = recebedorTempDto.getDocumento().substring(0, Math.min(5, recebedorTempDto.getDocumento().length()));
+        String senhaCriptografada = passwordEncrypt.hashPassword(baseSenha);
 
 		Character transfAutomatica = (recebedorTempDto.getTransfAutomatica() != null)
 				? recebedorTempDto.getTransfAutomatica()
@@ -50,10 +58,14 @@ public class RecebedorTempService {
 				: 'M';
 		Integer transfDia = (recebedorTempDto.getTransfDia() != null) ? recebedorTempDto.getTransfDia() : 0;
 
-		repository.inserirRecebedorTemp(recebedorTempDto.getIdConta(), recebedorTempDto.getIdUsuario(),
-				recebedorTempDto.getTipoPessoa(), recebedorTempDto.getNome(), recebedorTempDto.getDocumento(),
-				recebedorTempDto.getEmail(), transfAutomatica, transfIntervalo, transfDia,
-				recebedorTempDto.getAntecipAut());
+		
+        repository.inserirRecebedorTemp(
+                recebedorTempDto.getIdConta(), recebedorTempDto.getIdUsuario(),
+                recebedorTempDto.getTipoPessoa(), recebedorTempDto.getNome(),
+                recebedorTempDto.getDocumento(), recebedorTempDto.getEmail(),
+                senhaCriptografada,  
+                transfAutomatica, transfIntervalo, transfDia, recebedorTempDto.getAntecipAut()
+        );
 
 		return repository.findTopByOrderByIdRecebedorTempDesc();
 	}

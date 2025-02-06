@@ -19,11 +19,14 @@ public interface RecebedorTempRepository extends JpaRepository<RecebedorTemp, Lo
 
 	@Procedure(procedureName = "PROC_INSERIR_RECEBEDOR_TEMP")
 	void inserirRecebedorTemp(@Param("p_ID_CONTA") Long idConta, @Param("p_ID_USUARIO") Long idUsuario,
-			@Param("p_TIPO_PESSOA") String tipoPessoa, @Param("p_NOME") String nome,
-			@Param("p_DOCUMENTO") String documento, @Param("p_E_MAIL") String email,
-			@Param("p_TRANSF_AUTOMATICA") Character transfAutomatica,
-			@Param("p_TRANSF_INTERVALO") Character transfIntervalo, @Param("p_TRANSF_DIA") Integer transfDia,
-			@Param("p_ANTECIP_AUT") Character antecipAut);
+	        @Param("p_TIPO_PESSOA") String tipoPessoa, @Param("p_NOME") String nome,
+	        @Param("p_DOCUMENTO") String documento, @Param("p_E_MAIL") String email,
+	        @Param("p_SENHA") String senha,  
+	        @Param("p_TRANSF_AUTOMATICA") Character transfAutomatica,
+	        @Param("p_TRANSF_INTERVALO") Character transfIntervalo, 
+	        @Param("p_TRANSF_DIA") Integer transfDia,
+	        @Param("p_ANTECIP_AUT") Character antecipAut);
+
 
 	RecebedorTemp findTopByOrderByIdRecebedorTempDesc();
 
