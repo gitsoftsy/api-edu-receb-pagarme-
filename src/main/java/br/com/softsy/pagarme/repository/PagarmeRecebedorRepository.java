@@ -17,8 +17,6 @@ public interface PagarmeRecebedorRepository extends JpaRepository<PagarmeRecebed
 
 	Optional<PagarmeRecebedor> findById(Long idPagarmeRecebedor);
 
-	boolean existsById(Long idConta);
-
 	Optional<PagarmeRecebedor> findByEmail(String email);
 	
     @Procedure(name = "PROC_FILTRAR_RECEBEDORES")
@@ -30,5 +28,7 @@ public interface PagarmeRecebedorRepository extends JpaRepository<PagarmeRecebed
     );
     
     PagarmeRecebedor findPagarmeRecebedorByEmailAndAtivo(String email, Character ativo);
+    
+    boolean existsByConta_IdConta(Long idConta);
 
 }
