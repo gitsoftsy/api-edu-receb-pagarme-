@@ -43,10 +43,10 @@ public class PagarmeRecebedorPfService {
 		return recebedorTempRepository.findByDocumento(cpf)
 				.map(recebedorTemp -> new CpfResponse(true, recebedorTemp.getIdRecebedorTemp(), "TBL_RECEBEDOR_TEMP",
 						"Dados encontrados"))
-				.or(() -> repository.findByCpf(cpf)
+				.orElseGet(() -> repository.findByCpf(cpf)
 						.map(pagarmeRecebedorPf -> new CpfResponse(true, pagarmeRecebedorPf.getIdPagarmeRecebedorPF(),
-								"TBL_PAGARME_RECEBEDOR_PF", "Dados encontrados")))
-				.orElse(new CpfResponse(false, null, null, "CPF não encontrado em nenhuma tabela."));
+								"TBL_PAGARME_RECEBEDOR_PF", "Dados encontrados"))
+				.orElse(new CpfResponse(false, null, null, "CPF não encontrado em nenhuma tabela.")));
 	}
 
 }

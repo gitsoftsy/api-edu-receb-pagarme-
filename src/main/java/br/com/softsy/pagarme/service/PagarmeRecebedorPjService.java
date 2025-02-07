@@ -52,9 +52,9 @@ public class PagarmeRecebedorPjService {
 		return recebedorTempRepository.findByDocumento(cnpj)
 				.map(recebedorTemp -> new CnpjResponse(true, recebedorTemp.getIdRecebedorTemp(), "TBL_RECEBEDOR_TEMP",
 						"Dados encontrados"))
-				.or(() -> recebedorPjRepository.findByCnpj(cnpj)
+				.orElseGet(() -> recebedorPjRepository.findByCnpj(cnpj)
 						.map(pagarmeRecebedorPj -> new CnpjResponse(true, pagarmeRecebedorPj.getIdPagarmeRecebedorPj(),
-								"TBL_PAGARME_RECEBEDOR_PJ", "Dados encontrados")))
-				.orElse(new CnpjResponse(false, null, null, "CNPJ não encontrado em nenhuma tabela."));
+								"TBL_PAGARME_RECEBEDOR_PJ", "Dados encontrados"))
+				.orElse(new CnpjResponse(false, null, null, "CNPJ não encontrado em nenhuma tabela.")));
 	}
 }

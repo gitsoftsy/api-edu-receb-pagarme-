@@ -18,7 +18,7 @@ public class PagarmeRecebedorPjController {
 	@Autowired
 	private PagarmeRecebedorPjService recebedorPjService;
 
-	 @GetMapping("/existByCnpj")
+	 @GetMapping("recebedores/existByCnpj")
 	    public ResponseEntity<CnpjResponse> verificarCnpj(
 	            @RequestHeader(value = "idConta", required = false) Long idConta,
 	            @RequestParam(value = "cnpj", required = false) String cnpj) {
