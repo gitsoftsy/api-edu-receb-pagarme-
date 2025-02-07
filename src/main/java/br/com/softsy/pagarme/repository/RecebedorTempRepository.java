@@ -41,4 +41,6 @@ public interface RecebedorTempRepository extends JpaRepository<RecebedorTemp, Lo
 	Optional<RecebedorTemp> findByDocumento(String documento);
 	
 	RecebedorTemp findRecebedorTempByEmail(String email);
+	
+	 boolean existsByConta_IdConta(Long idConta);
 }

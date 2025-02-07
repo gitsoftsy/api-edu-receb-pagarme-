@@ -37,9 +37,18 @@ public class PagarmeRecebedorPjService {
 	private OcupacaoRepository ocupacaoRepository;
 
 	public CnpjResponse verificarCnpj(String cnpj, Long idConta) {
+
 		if (!contaRepository.existsById(idConta)) {
 			return new CnpjResponse(false, null, null, "Conta inválida ou inexistente.");
 		}
+
+		boolean contaExisteEmRecebedorTemp = recebedorTempRepository.existsByConta_IdConta(idConta);
+		boolean contaExisteEmPagarmeRecebedorPj = recebedorPjRepository.existsByConta_IdConta(idConta);
+
+		if (!contaExisteEmRecebedorTemp && !contaExisteEmPagarmeRecebedorPj) {
+			return new CnpjResponse(false, null, null, "ID da conta não encontrado em nenhuma tabela de recebedores.");
+		}
+
 		return recebedorTempRepository.findByDocumento(cnpj)
 				.map(recebedorTemp -> new CnpjResponse(true, recebedorTemp.getIdRecebedorTemp(), "TBL_RECEBEDOR_TEMP",
 						"Dados encontrados"))
@@ -48,5 +57,4 @@ public class PagarmeRecebedorPjService {
 								"TBL_PAGARME_RECEBEDOR_PJ", "Dados encontrados")))
 				.orElse(new CnpjResponse(false, null, null, "CNPJ não encontrado em nenhuma tabela."));
 	}
-
 }

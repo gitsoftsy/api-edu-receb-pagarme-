@@ -33,7 +33,7 @@ public class PagarmeRecebedorPfService {
 			return new CpfResponse(false, null, null, "Conta inválida ou inexistente.");
 		}
 
-		boolean contaExisteEmRecebedorTemp = recebedorTempRepository.existsById(idConta);
+		boolean contaExisteEmRecebedorTemp = recebedorTempRepository.existsByConta_IdConta(idConta);
 		boolean contaExisteEmPagarmeRecebedorPf = repository.existsByConta_IdConta(idConta);
 
 		if (!contaExisteEmRecebedorTemp && !contaExisteEmPagarmeRecebedorPf) {
