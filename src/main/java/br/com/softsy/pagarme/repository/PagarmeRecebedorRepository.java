@@ -31,8 +31,5 @@ public interface PagarmeRecebedorRepository extends JpaRepository<PagarmeRecebed
     
     boolean existsByConta_IdConta(Long idConta);
     
-    //teste
     boolean existsByEmail(String email);
-
-
 }

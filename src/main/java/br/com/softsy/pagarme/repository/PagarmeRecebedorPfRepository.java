@@ -23,7 +23,6 @@ public interface PagarmeRecebedorPfRepository extends JpaRepository<PagarmeReceb
 	
     boolean existsByConta_IdConta(Long idConta);
 	
-    //teste
     boolean existsByCpf(String cpf);
 
 }
