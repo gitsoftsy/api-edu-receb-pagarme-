@@ -1,6 +1,5 @@
 package br.com.softsy.pagarme.service;
 
-
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,8 +16,10 @@ import br.com.softsy.pagarme.infra.exception.UniqueException;
 import br.com.softsy.pagarme.model.RecebedorTemp;
 import br.com.softsy.pagarme.repository.ContaRepository;
 import br.com.softsy.pagarme.repository.RecebedorTempRepository;
+import br.com.softsy.pagarme.repository.PagarmeRecebedorRepository;
+import br.com.softsy.pagarme.repository.PagarmeRecebedorPjRepository;
+import br.com.softsy.pagarme.repository.PagarmeRecebedorPfRepository;
 import br.com.softsy.pagarme.dto.CadastroRecebedorTempDTO;
-
 
 @Service
 public class RecebedorTempService {
@@ -30,25 +31,89 @@ public class RecebedorTempService {
 	private ContaRepository contaRepository;
 
 	@Autowired
-	private PasswordEncrypt passwordEncrypt; 
+	private PagarmeRecebedorRepository pagarmeRecebedorRepository;
+
+	@Autowired
+	private PagarmeRecebedorPjRepository pagarmeRecebedorPJRepository;
+
+	@Autowired
+	private PagarmeRecebedorPfRepository pagarmeRecebedorPFRepository;
+
+	@Autowired
+	private PasswordEncrypt passwordEncrypt;
 
 	public List<RecebedorTemp> listarTudo() {
 		return repository.findAll();
 	}
 
+//	@Transactional
+//	public RecebedorTemp inserirRecebedorTemp(CadastroRecebedorTempDTO cadastroRecebedorTempDTO) {
+//
+//		if (repository.findByDocumento(cadastroRecebedorTempDTO.getDocumento()).isPresent()) {
+//			throw new UniqueException("Já existe um recebedor com este documento cadastrado.");
+//		}
+//
+//		if (repository.existsByEmail(cadastroRecebedorTempDTO.getEmail())) {
+//			throw new UniqueException("Já existe um recebedor com este e-mail cadastrado.");
+//		}
+//		
+//        String baseSenha = cadastroRecebedorTempDTO.getDocumento().substring(0, Math.min(5, cadastroRecebedorTempDTO.getDocumento().length()));
+//        String senhaCriptografada = passwordEncrypt.hashPassword(baseSenha);
+//
+//		Character transfAutomatica = (cadastroRecebedorTempDTO.getTransfAutomatica() != null)
+//				? cadastroRecebedorTempDTO.getTransfAutomatica()
+//				: 'S';
+//		Character transfIntervalo = (cadastroRecebedorTempDTO.getTransfIntervalo() != null)
+//				? cadastroRecebedorTempDTO.getTransfIntervalo()
+//				: 'M';
+//		Integer transfDia = (cadastroRecebedorTempDTO.getTransfDia() != null) ? cadastroRecebedorTempDTO.getTransfDia() : 0;
+//
+//		
+//        repository.inserirRecebedorTemp(
+//        		cadastroRecebedorTempDTO.getIdConta(), cadastroRecebedorTempDTO.getIdUsuario(),
+//        		cadastroRecebedorTempDTO.getTipoPessoa(), cadastroRecebedorTempDTO.getNome(),
+//        		cadastroRecebedorTempDTO.getDocumento(), cadastroRecebedorTempDTO.getEmail(),
+//                senhaCriptografada,  
+//                transfAutomatica, transfIntervalo, transfDia, cadastroRecebedorTempDTO.getAntecipAut()
+//        );
+//
+//		return repository.findTopByOrderByIdRecebedorTempDesc();
+//	}
+
 	@Transactional
 	public RecebedorTemp inserirRecebedorTemp(CadastroRecebedorTempDTO cadastroRecebedorTempDTO) {
 
-		if (repository.findByDocumento(cadastroRecebedorTempDTO.getDocumento()).isPresent()) {
-			throw new UniqueException("Já existe um recebedor com este documento cadastrado.");
+		if (pagarmeRecebedorRepository.existsByEmail(cadastroRecebedorTempDTO.getEmail())) {
+			throw new UniqueException("Já existe um recebedor na base com este e-mail cadastrado.");
+		}
+
+		if (pagarmeRecebedorPJRepository.existsByCnpj(cadastroRecebedorTempDTO.getDocumento())) {
+			throw new UniqueException("Já existe um recebedor na base com este documento cadastrado.");
+		}
+
+		if (pagarmeRecebedorPFRepository.existsByCpf(cadastroRecebedorTempDTO.getDocumento())) {
+			throw new UniqueException("Já existe um recebedor na base com este CPF cadastrado.");
+		}
+
+		String documento = cadastroRecebedorTempDTO.getDocumento();
+		if ("PF".equalsIgnoreCase(cadastroRecebedorTempDTO.getTipoPessoa()) && documento.length() != 11) {
+			throw new IllegalArgumentException("CPF inválido! O CPF deve conter exatamente 11 caracteres.");
+		}
+
+		if ("PJ".equalsIgnoreCase(cadastroRecebedorTempDTO.getTipoPessoa()) && documento.length() != 14) {
+			throw new IllegalArgumentException("CNPJ inválido! O CNPJ deve conter exatamente 14 caracteres.");
+		}
+
+		if (repository.findByDocumento(documento).isPresent()) {
+			throw new UniqueException("Já existe um recebedor temporário com este documento cadastrado.");
 		}
 
 		if (repository.existsByEmail(cadastroRecebedorTempDTO.getEmail())) {
-			throw new UniqueException("Já existe um recebedor com este e-mail cadastrado.");
+			throw new UniqueException("Já existe um recebedor temporário com este e-mail cadastrado.");
 		}
-		
-        String baseSenha = cadastroRecebedorTempDTO.getDocumento().substring(0, Math.min(5, cadastroRecebedorTempDTO.getDocumento().length()));
-        String senhaCriptografada = passwordEncrypt.hashPassword(baseSenha);
+
+		String baseSenha = documento.substring(0, Math.min(5, documento.length()));
+		String senhaCriptografada = passwordEncrypt.hashPassword(baseSenha);
 
 		Character transfAutomatica = (cadastroRecebedorTempDTO.getTransfAutomatica() != null)
 				? cadastroRecebedorTempDTO.getTransfAutomatica()
@@ -56,16 +121,13 @@ public class RecebedorTempService {
 		Character transfIntervalo = (cadastroRecebedorTempDTO.getTransfIntervalo() != null)
 				? cadastroRecebedorTempDTO.getTransfIntervalo()
 				: 'M';
-		Integer transfDia = (cadastroRecebedorTempDTO.getTransfDia() != null) ? cadastroRecebedorTempDTO.getTransfDia() : 0;
+		Integer transfDia = (cadastroRecebedorTempDTO.getTransfDia() != null) ? cadastroRecebedorTempDTO.getTransfDia()
+				: 0;
 
-		
-        repository.inserirRecebedorTemp(
-        		cadastroRecebedorTempDTO.getIdConta(), cadastroRecebedorTempDTO.getIdUsuario(),
-        		cadastroRecebedorTempDTO.getTipoPessoa(), cadastroRecebedorTempDTO.getNome(),
-        		cadastroRecebedorTempDTO.getDocumento(), cadastroRecebedorTempDTO.getEmail(),
-                senhaCriptografada,  
-                transfAutomatica, transfIntervalo, transfDia, cadastroRecebedorTempDTO.getAntecipAut()
-        );
+		repository.inserirRecebedorTemp(cadastroRecebedorTempDTO.getIdConta(), cadastroRecebedorTempDTO.getIdUsuario(),
+				cadastroRecebedorTempDTO.getTipoPessoa(), cadastroRecebedorTempDTO.getNome(), documento,
+				cadastroRecebedorTempDTO.getEmail(), senhaCriptografada, transfAutomatica, transfIntervalo, transfDia,
+				cadastroRecebedorTempDTO.getAntecipAut());
 
 		return repository.findTopByOrderByIdRecebedorTempDesc();
 	}

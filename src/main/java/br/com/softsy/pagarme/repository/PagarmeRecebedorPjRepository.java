@@ -15,5 +15,9 @@ public interface PagarmeRecebedorPjRepository extends  JpaRepository<PagarmeRece
 	boolean existsById(Long idConta);
 	
     boolean existsByConta_IdConta(Long idConta);
+    
+    //teste
+    boolean existsByCnpj(String cnpj);
+
 
 }
