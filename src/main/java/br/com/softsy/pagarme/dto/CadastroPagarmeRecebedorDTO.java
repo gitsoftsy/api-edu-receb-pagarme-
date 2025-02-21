@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class CadastroPagarmeRecebedorDTO {
+	
 	private Long idPagarmeRecebedor;
 
 	private Long idConta;

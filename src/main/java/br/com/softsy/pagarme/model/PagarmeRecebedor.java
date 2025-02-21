@@ -2,13 +2,16 @@ package br.com.softsy.pagarme.model;
 
 import java.time.LocalDateTime;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import br.com.softsy.pagarme.model.Conta;
@@ -22,18 +25,19 @@ public class PagarmeRecebedor {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+
 	@Column(name = "ID_PAGARME_RECEBEDOR")
 	private Long idPagarmeRecebedor;
 
-	@ManyToOne
-	@JoinColumn(name = "ID_CONTA")
+	@OneToOne
+	@JoinColumn(name = "ID_CONTA", referencedColumnName = "ID_CONTA")
 	private Conta conta;
 
 	@Column(name = "DT_CADASTRO", columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP", nullable = false)
 	private LocalDateTime dataCadastro;
 
-	@ManyToOne
-	@JoinColumn(name = "ID_USUARIO")
+	@OneToOne
+	@JoinColumn(name = "ID_USUARIO", referencedColumnName = "ID_USUARIO")
 	private Usuario usuario;
 
 	@Column(name = "TIPO_PESSOA", length = 2, nullable = false)
@@ -80,5 +84,11 @@ public class PagarmeRecebedor {
 
 	@Column(name = "CELULAR")
 	private String celular;
+
+	@OneToOne(mappedBy = "pagarmeRecebedor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private PagarmeRecebedorPj pagarmeRecebedorPj;
+
+	@OneToOne(mappedBy = "pagarmeRecebedor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private PagarmeRecebedorPjRespLegal pagarmeRecebedorPjRespLegal;
 
 }

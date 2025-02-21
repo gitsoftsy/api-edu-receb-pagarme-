@@ -11,6 +11,19 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.softsy.pagarme.response.CnpjResponse;
 import br.com.softsy.pagarme.service.PagarmeRecebedorPjService;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import br.com.softsy.pagarme.dto.CadastroPagarmeRecebedorPjDTO;
+import br.com.softsy.pagarme.model.PagarmeRecebedorPj;
+import br.com.softsy.pagarme.service.PagarmeRecebedorPjService;
+import lombok.RequiredArgsConstructor;
+
+import javax.validation.Valid;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/recebedorPj")
 public class PagarmeRecebedorPjController {
@@ -18,23 +31,50 @@ public class PagarmeRecebedorPjController {
 	@Autowired
 	private PagarmeRecebedorPjService recebedorPjService;
 
-	 @GetMapping("recebedores/existByCnpj")
-	    public ResponseEntity<CnpjResponse> verificarCnpj(
-	            @RequestHeader(value = "idConta", required = false) Long idConta,
-	            @RequestParam(value = "cnpj", required = false) String cnpj) {
+	@GetMapping("recebedores/existByCnpj")
+	public ResponseEntity<CnpjResponse> verificarCnpj(@RequestHeader(value = "idConta", required = false) Long idConta,
+			@RequestParam(value = "cnpj", required = false) String cnpj) {
 
-	        if (idConta == null) {
-	            return ResponseEntity.badRequest()
-	                    .body(new CnpjResponse(false, null, null, "O header 'idConta' é obrigatório."));
-	        }
+		if (idConta == null) {
+			return ResponseEntity.badRequest()
+					.body(new CnpjResponse(false, null, null, "O header 'idConta' é obrigatório."));
+		}
 
-	        if (cnpj == null || cnpj.trim().isEmpty()) {
-	            return ResponseEntity.badRequest()
-	                    .body(new CnpjResponse(false, null, null, "O parâmetro 'cnpj' é obrigatório."));
-	        }
+		if (cnpj == null || cnpj.trim().isEmpty()) {
+			return ResponseEntity.badRequest()
+					.body(new CnpjResponse(false, null, null, "O parâmetro 'cnpj' é obrigatório."));
+		}
 
-	        CnpjResponse response = recebedorPjService.verificarCnpj(cnpj, idConta);
-	        return ResponseEntity.ok(response);
-	    }
+		CnpjResponse response = recebedorPjService.verificarCnpj(cnpj, idConta);
+		return ResponseEntity.ok(response);
+	}
+
+	@PostMapping
+	public ResponseEntity<Map<String, Object>> inserirRecebedorPJ(
+			@Valid @RequestBody CadastroPagarmeRecebedorPjDTO dto) {
+
+		try {
+
+			System.out.println(" ID Recebedor Temp recebido no Body: " + dto.getIdRecebedorTemp());
+
+			if (dto.getIdRecebedorTemp() == null) {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+						.body(Collections.singletonMap("mensagem", "O ID do Recebedor Temporário não pode ser nulo."));
+			}
+
+			PagarmeRecebedorPj recebedorCriado = recebedorPjService.inserirRecebedorPJ(dto.getIdRecebedorTemp(), dto);
+
+			Map<String, Object> respostaFinal = new LinkedHashMap<>();
+			respostaFinal.put("mensagem", "Recebedor PJ inserido com sucesso!");
+			respostaFinal.put("quantidade", 1);
+			respostaFinal.put("dados", recebedorPjService.formatarRetorno(recebedorCriado));
+
+			return ResponseEntity.ok(respostaFinal);
+
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(Collections.singletonMap("mensagem", "Erro interno ao inserir o Recebedor PJ."));
+		}
+	}
 
 }

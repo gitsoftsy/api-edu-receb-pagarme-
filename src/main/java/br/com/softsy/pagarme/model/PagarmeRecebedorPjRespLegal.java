@@ -10,6 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import lombok.Data;
@@ -25,8 +26,14 @@ public class PagarmeRecebedorPjRespLegal {
     @Column(name = "ID_PAGARME_RECEBEDOR_PJ_RESP_LEGAL")
     private Long idPagarmeRecebedorPjRespLegal;
 
-    @ManyToOne
-    @JoinColumn(name = "ID_PAGARME_RECEBEDOR")
+    //teste
+//    @ManyToOne
+//    @JoinColumn(name = "ID_PAGARME_RECEBEDOR")
+//    private PagarmeRecebedor pagarmeRecebedor;
+    
+ // ✅ Ligação correta com `PagarmeRecebedor`
+    @OneToOne
+    @JoinColumn(name = "ID_PAGARME_RECEBEDOR", referencedColumnName = "ID_PAGARME_RECEBEDOR")
     private PagarmeRecebedor pagarmeRecebedor;
 
     @Column(name = "NOME_RESP_LEGAL", length = 255, nullable = false)
