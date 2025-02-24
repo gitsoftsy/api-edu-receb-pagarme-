@@ -1,28 +1,25 @@
 package br.com.softsy.pagarme.service;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import br.com.softsy.pagarme.model.PagarmeRecebedor;
 import br.com.softsy.pagarme.model.PagarmeRecebedorPj;
 import br.com.softsy.pagarme.model.PagarmeRecebedorPjRespLegal;
 import br.com.softsy.pagarme.repository.BancoRepository;
 import br.com.softsy.pagarme.repository.ContaRepository;
 import br.com.softsy.pagarme.repository.OcupacaoRepository;
 import br.com.softsy.pagarme.repository.PagarmeRecebedorPjRepository;
-import br.com.softsy.pagarme.repository.PagarmeRecebedorPjRespLegalRepository;
-import br.com.softsy.pagarme.repository.PagarmeRecebedorRepository;
+
 import br.com.softsy.pagarme.repository.RecebedorTempRepository;
+import br.com.softsy.pagarme.repository.TipoEmpresaRepository;
+
 import br.com.softsy.pagarme.response.CnpjResponse;
 import br.com.softsy.pagarme.dto.CadastroPagarmeRecebedorPjDTO;
+import br.com.softsy.pagarme.infra.exception.UniqueException;
 
 @Service
 public class PagarmeRecebedorPjService {
@@ -35,6 +32,15 @@ public class PagarmeRecebedorPjService {
 
 	@Autowired
 	private ContaRepository contaRepository;
+
+	@Autowired
+	private TipoEmpresaRepository tipoEmpresaRepository;
+
+	@Autowired
+	private OcupacaoRepository ocupacaoRepository;
+
+	@Autowired
+	private BancoRepository bancoRepository;
 
 	public CnpjResponse verificarCnpj(String cnpj, Long idConta) {
 
@@ -56,6 +62,21 @@ public class PagarmeRecebedorPjService {
 						.map(pagarmeRecebedorPj -> new CnpjResponse(true, pagarmeRecebedorPj.getIdPagarmeRecebedorPj(),
 								"TBL_PAGARME_RECEBEDOR_PJ", "Dados encontrados"))
 						.orElse(new CnpjResponse(false, null, null, "CNPJ não encontrado em nenhuma tabela.")));
+	}
+
+	private void validarIdsExistentes(CadastroPagarmeRecebedorPjDTO cadastroDTO) {
+		if (!recebedorTempRepository.existsById(cadastroDTO.getIdRecebedorTemp())) {
+			throw new UniqueException("O ID do Recebedor Temporário não existe.");
+		}
+		if (!tipoEmpresaRepository.existsById(cadastroDTO.getIdTipoEmpresa())) {
+			throw new UniqueException("O ID do Tipo de Empresa não existe.");
+		}
+		if (!ocupacaoRepository.existsById(cadastroDTO.getIdOcupacao())) {
+			throw new UniqueException("O ID da Ocupação não existe.");
+		}
+		if (!bancoRepository.existsById(cadastroDTO.getIdBanco())) {
+			throw new UniqueException("O ID do Banco não existe.");
+		}
 	}
 
 	private void executarProcedureInsercaoRecebedorPj(CadastroPagarmeRecebedorPjDTO cadastroRecebedorPjDTO) {
@@ -95,6 +116,8 @@ public class PagarmeRecebedorPjService {
 			throw new IllegalArgumentException("O ID do Recebedor Temporário não pode ser nulo.");
 		}
 
+		validarIdsExistentes(cadastroDTO);
+
 		String cnpj = recebedorTempRepository.findCnpjByRecebedorTempId(idRecebedorTemp).orElseThrow(
 				() -> new IllegalArgumentException("Não foi possível encontrar o CNPJ do Recebedor Temporário."));
 
@@ -109,6 +132,7 @@ public class PagarmeRecebedorPjService {
 	}
 
 	public Map<String, Object> formatarRetorno(PagarmeRecebedorPj recebedor) {
+
 		Map<String, Object> respostaFormatada = new LinkedHashMap<>();
 
 		respostaFormatada.put("idConta", recebedor.getConta() != null ? recebedor.getConta().getIdConta() : null);

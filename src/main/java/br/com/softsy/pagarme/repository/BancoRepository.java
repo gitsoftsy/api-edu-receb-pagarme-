@@ -11,4 +11,5 @@ import br.com.softsy.pagarme.model.Banco;
 public interface BancoRepository extends JpaRepository<Banco, Long> {
 
 	List<Banco> findByBanco(String banco);
+
 }

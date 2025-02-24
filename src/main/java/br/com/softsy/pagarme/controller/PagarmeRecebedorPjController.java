@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import br.com.softsy.pagarme.dto.CadastroPagarmeRecebedorPjDTO;
+import br.com.softsy.pagarme.infra.exception.UniqueException;
 import br.com.softsy.pagarme.model.PagarmeRecebedorPj;
 import br.com.softsy.pagarme.service.PagarmeRecebedorPjService;
 import lombok.RequiredArgsConstructor;
@@ -54,7 +55,6 @@ public class PagarmeRecebedorPjController {
 			@Valid @RequestBody CadastroPagarmeRecebedorPjDTO cadasproRecebedorPjDTO) {
 
 		try {
-
 			if (cadasproRecebedorPjDTO.getIdRecebedorTemp() == null) {
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 						.body(Collections.singletonMap("mensagem", "O ID do Recebedor Temporário não pode ser nulo."));
@@ -69,6 +69,10 @@ public class PagarmeRecebedorPjController {
 			respostaFinal.put("dados", recebedorPjService.formatarRetorno(recebedorCriado));
 
 			return ResponseEntity.ok(respostaFinal);
+
+		} catch (UniqueException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body(Collections.singletonMap("mensagem", e.getMessage()));
 
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

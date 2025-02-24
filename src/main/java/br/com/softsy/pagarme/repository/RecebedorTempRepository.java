@@ -44,6 +44,5 @@ public interface RecebedorTempRepository extends JpaRepository<RecebedorTemp, Lo
 
 	@Query("SELECT r.documento FROM RecebedorTemp r WHERE r.idRecebedorTemp = :idRecebedorTemp")
 	Optional<String> findCnpjByRecebedorTempId(@Param("idRecebedorTemp") Long idRecebedorTemp);
-	
-	
+
 }

@@ -12,4 +12,5 @@ import br.com.softsy.pagarme.model.Ocupacao;
 public interface OcupacaoRepository extends JpaRepository<Ocupacao, Long> {
 
 	List<Ocupacao> findByCodCBO(String codCBO);
+	
 }

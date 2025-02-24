@@ -11,4 +11,5 @@ import br.com.softsy.pagarme.model.TipoEmpresa;
 public interface TipoEmpresaRepository extends JpaRepository<TipoEmpresa, Long> {
 
 	List<TipoEmpresa> findByTipoEmpresa(String tipoEmpresa);
+	
 }
