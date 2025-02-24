@@ -28,25 +28,13 @@ import br.com.softsy.pagarme.dto.CadastroPagarmeRecebedorPjDTO;
 public class PagarmeRecebedorPjService {
 
 	@Autowired
-	private PagarmeRecebedorRepository recebedorRepository;
-
-	@Autowired
 	private PagarmeRecebedorPjRepository recebedorPjRepository;
-
-	@Autowired
-	private PagarmeRecebedorPjRespLegalRepository recebedorRespLegalRepository;
 
 	@Autowired
 	private RecebedorTempRepository recebedorTempRepository;
 
 	@Autowired
 	private ContaRepository contaRepository;
-
-	@Autowired
-	private BancoRepository bancoRepository;
-
-	@Autowired
-	private OcupacaoRepository ocupacaoRepository;
 
 	public CnpjResponse verificarCnpj(String cnpj, Long idConta) {
 
@@ -72,7 +60,6 @@ public class PagarmeRecebedorPjService {
 
 	private void executarProcedureInsercaoRecebedorPj(CadastroPagarmeRecebedorPjDTO cadastroRecebedorPjDTO) {
 		try {
-			System.out.printf("📌 Executando Procedure...\n");
 			recebedorPjRepository.inserirRecebedorPJ(cadastroRecebedorPjDTO.getIdRecebedorTemp(),
 					cadastroRecebedorPjDTO.getTelefone(), cadastroRecebedorPjDTO.getCelular(),
 					cadastroRecebedorPjDTO.getNomeFantasia(), cadastroRecebedorPjDTO.getRazaoSocial(),
@@ -97,25 +84,25 @@ public class PagarmeRecebedorPjService {
 					cadastroRecebedorPjDTO.getCidadeRespLegal(), cadastroRecebedorPjDTO.getEstadoRespLegal(),
 					cadastroRecebedorPjDTO.getCepRespLegal(), cadastroRecebedorPjDTO.getPontoReferenciaRespLegal(),
 					cadastroRecebedorPjDTO.getTelefoneRespLegal(), cadastroRecebedorPjDTO.getCelularRespLegal());
-			System.out.printf("✅ Procedure executada com sucesso!\n");
 		} catch (Exception e) {
-			System.out.printf("❌ Erro ao executar a procedure: %s\n", e.getMessage());
-			throw new RuntimeException("Erro ao inserir o Recebedor PJ no banco de dados", e);
+			throw new RuntimeException(e.getMessage(), e);
 		}
 	}
 
 	@Transactional
-	public PagarmeRecebedorPj inserirRecebedorPJ(Long idRecebedorTemp,
-			CadastroPagarmeRecebedorPjDTO cadastroRecebedorPjDTO) {
-
+	public PagarmeRecebedorPj inserirRecebedorPJ(Long idRecebedorTemp, CadastroPagarmeRecebedorPjDTO cadastroDTO) {
 		if (idRecebedorTemp == null) {
-			throw new IllegalArgumentException(" O ID do Recebedor Temporário não pode ser nulo.");
+			throw new IllegalArgumentException("O ID do Recebedor Temporário não pode ser nulo.");
 		}
 
 		String cnpj = recebedorTempRepository.findCnpjByRecebedorTempId(idRecebedorTemp).orElseThrow(
-				() -> new IllegalArgumentException(" Não foi possível encontrar o CNPJ do Recebedor Temporário."));
+				() -> new IllegalArgumentException("Não foi possível encontrar o CNPJ do Recebedor Temporário."));
 
-		executarProcedureInsercaoRecebedorPj(cadastroRecebedorPjDTO);
+		if (recebedorPjRepository.existsByCnpj(cnpj)) {
+			throw new IllegalArgumentException("Já existe um recebedor PJ com o CNPJ informado.");
+		}
+
+		executarProcedureInsercaoRecebedorPj(cadastroDTO);
 
 		return recebedorPjRepository.findByCnpj(cnpj).orElseThrow(
 				() -> new IllegalArgumentException("Erro ao buscar o recebedor PJ recém inserido pelo CNPJ."));
@@ -131,7 +118,6 @@ public class PagarmeRecebedorPjService {
 		respostaFormatada.put("tipoPessoa", "JURIDICA");
 		respostaFormatada.put("email",
 				recebedor.getPagarmeRecebedor() != null ? recebedor.getPagarmeRecebedor().getEmail() : null);
-		respostaFormatada.put("senha", "senhaSegura123");
 		respostaFormatada.put("transfIntervalo", "DIARIO");
 		respostaFormatada.put("antecipAut", true);
 		respostaFormatada.put("telefone",
@@ -152,7 +138,7 @@ public class PagarmeRecebedorPjService {
 		respostaFormatada.put("conta", recebedor.getContaBancaria());
 		respostaFormatada.put("dvConta", recebedor.getDvConta());
 
-		// Endereço da empresa
+		// endereço da empresa
 		Map<String, Object> enderecoEmpresa = new LinkedHashMap<>();
 		enderecoEmpresa.put("endereco", recebedor.getEndereco());
 		enderecoEmpresa.put("numero", recebedor.getNumero());
@@ -165,7 +151,7 @@ public class PagarmeRecebedorPjService {
 
 		respostaFormatada.put("enderecoEmpresa", enderecoEmpresa);
 
-		// Responsável legal
+		// responsável legal
 		if (recebedor.getPagarmeRecebedor() != null
 				&& recebedor.getPagarmeRecebedor().getPagarmeRecebedorPjRespLegal() != null) {
 			PagarmeRecebedorPjRespLegal respLegal = recebedor.getPagarmeRecebedor().getPagarmeRecebedorPjRespLegal();

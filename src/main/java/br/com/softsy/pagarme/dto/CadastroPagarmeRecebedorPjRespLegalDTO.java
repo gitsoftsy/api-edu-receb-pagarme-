@@ -25,19 +25,19 @@ public class CadastroPagarmeRecebedorPjRespLegalDTO {
 	
 	private Long idPagarmeRecebedor;
 
-	@NotNull
+	@NotNull(message = "O nome do responsável legal é obrigatório")
 	private String nomeRespLegal;
 
-	@NotNull
+	@NotNull(message = "O email do responsável legal é obrigatório")
 	private String emailRespLegal;
-
-	@NotNull
+	
+	@NotNull(message = "O CPF do responsável legal é obrigatório")
 	private String cpfRespLegal;
 
-	@NotNull
+	@NotNull(message = "A data de nascimento do responsável legal é obrigatória")
 	private LocalDate dataNascimentoRespLegal;
 
-	@NotNull
+	@NotNull(message = "O nome da mãe do responsável legal é obrigatório")
 	private String nomeMaeRespLegal;
 
 	@OneToOne
@@ -46,27 +46,27 @@ public class CadastroPagarmeRecebedorPjRespLegalDTO {
 	
 	private Long idOcupacao;
 
-	@NotNull
+	@NotNull(message = "A renda mensal do responsável legal é obrigatória")
 	private BigDecimal rendaMensal;
 
-	@NotNull
+	@NotNull(message = "O endereço do responsável legal é obrigatório")
 	private String enderecoRespLegal;
 
-	@NotNull
+	@NotNull(message = "O número do endereço do responsável legal é obrigatório")
 	private String numeroRespLegal;
 
 	private String complementoRespLegal;
 
-	@NotNull
+	@NotNull(message = "O bairro do responsável legal é obrigatório")
 	private String bairroRespLegal;
 
-	@NotNull
+	@NotNull(message = "A cidade do responsável legal é obrigatória")
 	private String cidadeRespLegal;
 
-	@NotNull
+	@NotNull(message = "O estado do responsável legal é obrigatório")
 	private String estadoRespLegal;
 
-	@NotNull
+	@NotNull(message = "O CEP do responsável legal é obrigatório")
 	private String cepRespLegal;
 
 	private String pontoReferenciaRespLegal;
@@ -98,5 +98,4 @@ public class CadastroPagarmeRecebedorPjRespLegalDTO {
 		this.telefoneRespLegal = pagarmeRecebedorPjRespLegal.getTelefoneRespLegal();
 		this.celularRespLegal = pagarmeRecebedorPjRespLegal.getCelularRespLegal();
 	}
-
 }

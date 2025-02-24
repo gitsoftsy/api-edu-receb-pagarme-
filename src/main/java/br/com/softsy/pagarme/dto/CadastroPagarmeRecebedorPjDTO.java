@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CadastroPagarmeRecebedorPjDTO {
 
-	@NotNull(message = "idRecebedorTemp não pode ser nulo")
+//	@NotNull(message = "idRecebedorTemp não pode ser nulo")
 	private Long idRecebedorTemp;
 
 	/////// Dados da TBL_PAGARME_RECEBEDOR_PJ ////////
@@ -99,49 +99,49 @@ public class CadastroPagarmeRecebedorPjDTO {
 
 	/////// Dados da TBL_PAGARME_RECEBEDOR_PJ_RESP_LEGAL ////////
 
-	@NotNull
-	@Size(max = 255)
+	@NotNull(message = "O nome do responsável legal é obrigatório")
+	@Size(max = 255, message = "O nome do responsável legal deve ter no máximo 255 caracteres")
 	private String nomeRespLegal;
 
-	@NotNull
+	@NotNull(message = "O email do responsável legal é obrigatório")
 	@Email
 	@Size(max = 255)
 	private String emailRespLegal;
 
-	@NotNull
+	@NotNull(message = "O CPF do responsável legal é obrigatório")
 	@Pattern(regexp = "\\d{11}", message = "CPF deve conter exatamente 11 dígitos numéricos")
 	private String cpfRespLegal;
 
-	@NotNull
+	@NotNull(message = "A data de nascimento do responsável legal é obrigatória")
 	private LocalDate dataNascimentoRespLegal;
 
-	@NotNull
+	@NotNull(message = "O nome da mãe do responsável legal é obrigatório")
 	@Size(max = 255)
 	private String nomeMaeRespLegal;
 
-	@NotNull
+	@NotNull(message = "A ocupação do responsável legal é obrigatória")
 	private Long idOcupacao;
 
-	@NotNull
+	@NotNull(message = "A renda mensal do responsável legal é obrigatória")
 	@DecimalMin(value = "0.01", message = "Renda mensal deve ser um valor positivo")
 	private BigDecimal rendaMensal;
 
-	@NotNull
+	@NotNull(message = "O endereço do responsável legal é obrigatório")
 	@Size(max = 255)
 	private String enderecoRespLegal;
 
-	@NotNull
-	@Size(max = 10)
+	@NotNull(message = "O número do endereço do responsável legal é obrigatório")
+	@Size(max = 10, message = "O número do endereço do responsável legal deve ter no máximo 10 caracteres")
 	private String numeroRespLegal;
 
 	@Size(max = 255)
 	private String complementoRespLegal;
 
-	@NotNull
+	@NotNull(message = "O bairro do responsável legal é obrigatório")
 	@Size(max = 255)
 	private String bairroRespLegal;
 
-	@NotNull
+	@NotNull(message = "A cidade do responsável legal é obrigatória")
 	@Size(max = 255)
 	private String cidadeRespLegal;
 

@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import br.com.softsy.pagarme.model.PagarmeRecebedorPjRespLegal;
 
 @Repository
-public interface PagarmeRecebedorPjRespLegalRepository extends JpaRepository<PagarmeRecebedorPjRespLegal, Long>{
-
+public interface PagarmeRecebedorPjRespLegalRepository extends JpaRepository<PagarmeRecebedorPjRespLegal, Long> {
+	
 }

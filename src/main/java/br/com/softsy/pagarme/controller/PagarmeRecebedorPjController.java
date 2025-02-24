@@ -51,18 +51,17 @@ public class PagarmeRecebedorPjController {
 
 	@PostMapping
 	public ResponseEntity<Map<String, Object>> inserirRecebedorPJ(
-			@Valid @RequestBody CadastroPagarmeRecebedorPjDTO dto) {
+			@Valid @RequestBody CadastroPagarmeRecebedorPjDTO cadasproRecebedorPjDTO) {
 
 		try {
 
-			System.out.println(" ID Recebedor Temp recebido no Body: " + dto.getIdRecebedorTemp());
-
-			if (dto.getIdRecebedorTemp() == null) {
+			if (cadasproRecebedorPjDTO.getIdRecebedorTemp() == null) {
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 						.body(Collections.singletonMap("mensagem", "O ID do Recebedor Temporário não pode ser nulo."));
 			}
 
-			PagarmeRecebedorPj recebedorCriado = recebedorPjService.inserirRecebedorPJ(dto.getIdRecebedorTemp(), dto);
+			PagarmeRecebedorPj recebedorCriado = recebedorPjService
+					.inserirRecebedorPJ(cadasproRecebedorPjDTO.getIdRecebedorTemp(), cadasproRecebedorPjDTO);
 
 			Map<String, Object> respostaFinal = new LinkedHashMap<>();
 			respostaFinal.put("mensagem", "Recebedor PJ inserido com sucesso!");
