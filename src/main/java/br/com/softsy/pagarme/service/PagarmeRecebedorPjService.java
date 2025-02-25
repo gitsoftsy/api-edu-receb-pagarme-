@@ -56,6 +56,10 @@ public class PagarmeRecebedorPjService {
 		if (!contaExisteEmRecebedorTemp && !contaExisteEmPagarmeRecebedorPj) {
 			return new CnpjResponse(false, null, null, "ID da conta não encontrado em nenhuma tabela de recebedores.");
 		}
+	
+		if (cnpj == null || cnpj.trim().length() != 14) {
+			return new CnpjResponse(false, null, null, "CNPJ inválido. O CNPJ deve conter exatamente 14 dígitos.");
+		}
 
 		return recebedorTempRepository.findByDocumento(cnpj)
 				.map(recebedorTemp -> new CnpjResponse(true, recebedorTemp.getIdRecebedorTemp(), "TBL_RECEBEDOR_TEMP",

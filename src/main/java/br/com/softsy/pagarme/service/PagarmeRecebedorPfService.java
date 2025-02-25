@@ -40,13 +40,17 @@ public class PagarmeRecebedorPfService {
 			return new CpfResponse(false, null, null, "ID da conta não encontrado em nenhuma tabela de recebedores.");
 		}
 
+		if (cpf == null || cpf.trim().length() != 11) {
+			return new CpfResponse(false, null, null, "CPF inválido. O CPF deve conter exatamente 11 dígitos.");
+		}
+
 		return recebedorTempRepository.findByDocumento(cpf)
 				.map(recebedorTemp -> new CpfResponse(true, recebedorTemp.getIdRecebedorTemp(), "TBL_RECEBEDOR_TEMP",
 						"Dados encontrados"))
 				.orElseGet(() -> repository.findByCpf(cpf)
 						.map(pagarmeRecebedorPf -> new CpfResponse(true, pagarmeRecebedorPf.getIdPagarmeRecebedorPF(),
 								"TBL_PAGARME_RECEBEDOR_PF", "Dados encontrados"))
-				.orElse(new CpfResponse(false, null, null, "CPF não encontrado em nenhuma tabela.")));
+						.orElse(new CpfResponse(false, null, null, "CPF não encontrado em nenhuma tabela.")));
 	}
 
 }
