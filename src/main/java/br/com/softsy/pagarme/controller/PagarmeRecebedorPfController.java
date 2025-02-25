@@ -45,16 +45,15 @@ public class PagarmeRecebedorPfController {
 			@RequestParam(value = "cpf", required = false) String cpf) {
 
 		if (idConta == null) {
-			return ResponseEntity.badRequest()
-					.body(new CpfResponse(false, null, null, "O header 'idConta' é obrigatório."));
+			throw new IllegalArgumentException("O headers 'idConta' é obrigatório.");
 		}
 
 		if (cpf == null || cpf.trim().isEmpty()) {
-			return ResponseEntity.badRequest()
-					.body(new CpfResponse(false, null, null, "O parâmetro 'cpf' é obrigatório."));
+			throw new IllegalArgumentException("O parâmetro 'cpf' é obrigatório.");
 		}
 
 		CpfResponse response = service.verificarCpf(cpf, idConta);
 		return ResponseEntity.ok(response);
 	}
+
 }

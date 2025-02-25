@@ -30,18 +30,18 @@ public class PagarmeRecebedorPfService {
 	public CpfResponse verificarCpf(String cpf, Long idConta) {
 
 		if (!contaRepository.existsById(idConta)) {
-			return new CpfResponse(false, null, null, "Conta inválida ou inexistente.");
+			throw new IllegalArgumentException("Conta inválida ou inexistente.");
 		}
 
 		boolean contaExisteEmRecebedorTemp = recebedorTempRepository.existsByConta_IdConta(idConta);
 		boolean contaExisteEmPagarmeRecebedorPf = repository.existsByConta_IdConta(idConta);
 
 		if (!contaExisteEmRecebedorTemp && !contaExisteEmPagarmeRecebedorPf) {
-			return new CpfResponse(false, null, null, "ID da conta não encontrado em nenhuma tabela de recebedores.");
+			throw new IllegalArgumentException("ID da conta não encontrado em nenhuma tabela de recebedores.");
 		}
 
 		if (cpf == null || cpf.trim().length() != 11) {
-			return new CpfResponse(false, null, null, "CPF inválido. O CPF deve conter exatamente 11 dígitos.");
+			throw new IllegalArgumentException("CPF inválido. O CPF deve conter exatamente 11 dígitos.");
 		}
 
 		return recebedorTempRepository.findByDocumento(cpf)
@@ -50,7 +50,7 @@ public class PagarmeRecebedorPfService {
 				.orElseGet(() -> repository.findByCpf(cpf)
 						.map(pagarmeRecebedorPf -> new CpfResponse(true, pagarmeRecebedorPf.getIdPagarmeRecebedorPF(),
 								"TBL_PAGARME_RECEBEDOR_PF", "Dados encontrados"))
-						.orElse(new CpfResponse(false, null, null, "CPF não encontrado em nenhuma tabela.")));
+						.orElseThrow(() -> new IllegalArgumentException("CPF não encontrado em nenhuma tabela.")));
 	}
 
 }

@@ -28,4 +28,12 @@ public class ValidationExceptionHandler {
 		resposta.put("mensagem", e.getMessage());
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resposta);
 	}
+	
+	@ExceptionHandler(IllegalArgumentException.class)
+	public ResponseEntity<Map<String, Object>> handleIllegalArgumentException(IllegalArgumentException e) {
+	    Map<String, Object> resposta = new HashMap<>();
+	    resposta.put("mensagem", e.getMessage());
+	    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resposta);
+	}
+
 }

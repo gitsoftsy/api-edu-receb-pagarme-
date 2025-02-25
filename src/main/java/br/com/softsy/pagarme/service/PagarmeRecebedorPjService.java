@@ -47,18 +47,18 @@ public class PagarmeRecebedorPjService {
 	public CnpjResponse verificarCnpj(String cnpj, Long idConta) {
 
 		if (!contaRepository.existsById(idConta)) {
-			return new CnpjResponse(false, null, null, "Conta inválida ou inexistente.");
+			throw new IllegalArgumentException("Conta inválida ou inexistente.");
 		}
 
 		boolean contaExisteEmRecebedorTemp = recebedorTempRepository.existsByConta_IdConta(idConta);
 		boolean contaExisteEmPagarmeRecebedorPj = recebedorPjRepository.existsByConta_IdConta(idConta);
 
 		if (!contaExisteEmRecebedorTemp && !contaExisteEmPagarmeRecebedorPj) {
-			return new CnpjResponse(false, null, null, "ID da conta não encontrado em nenhuma tabela de recebedores.");
+			throw new IllegalArgumentException("ID da conta não encontrado em nenhuma tabela de recebedores.");
 		}
-	
-		if (cnpj == null || cnpj.trim().length() != 14) {
-			return new CnpjResponse(false, null, null, "CNPJ inválido. O CNPJ deve conter exatamente 14 dígitos.");
+
+		if (cnpj == null || cnpj.trim().length() != 14 || !cnpj.matches("\\d{14}")) {
+			throw new IllegalArgumentException("CNPJ inválido. O CNPJ deve conter exatamente 14 dígitos numéricos.");
 		}
 
 		return recebedorTempRepository.findByDocumento(cnpj)
@@ -67,7 +67,7 @@ public class PagarmeRecebedorPjService {
 				.orElseGet(() -> recebedorPjRepository.findByCnpj(cnpj)
 						.map(pagarmeRecebedorPj -> new CnpjResponse(true, pagarmeRecebedorPj.getIdPagarmeRecebedorPj(),
 								"TBL_PAGARME_RECEBEDOR_PJ", "Dados encontrados"))
-						.orElse(new CnpjResponse(false, null, null, "CNPJ não encontrado em nenhuma tabela.")));
+						.orElseThrow(() -> new IllegalArgumentException("CNPJ não encontrado em nenhuma tabela.")));
 	}
 
 	private void validarIdsExistentes(CadastroPagarmeRecebedorPjDTO cadastroDTO) {

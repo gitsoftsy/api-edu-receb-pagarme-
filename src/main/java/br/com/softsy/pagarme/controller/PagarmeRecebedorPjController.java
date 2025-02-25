@@ -37,18 +37,17 @@ public class PagarmeRecebedorPjController {
 			@RequestParam(value = "cnpj", required = false) String cnpj) {
 
 		if (idConta == null) {
-			return ResponseEntity.badRequest()
-					.body(new CnpjResponse(false, null, null, "O header 'idConta' é obrigatório."));
+			throw new IllegalArgumentException("O header 'idConta' é obrigatório.");
 		}
 
 		if (cnpj == null || cnpj.trim().isEmpty()) {
-			return ResponseEntity.badRequest()
-					.body(new CnpjResponse(false, null, null, "O parâmetro 'cnpj' é obrigatório."));
+			throw new IllegalArgumentException("O parâmetro 'cnpj' é obrigatório.");
 		}
 
 		CnpjResponse response = recebedorPjService.verificarCnpj(cnpj, idConta);
 		return ResponseEntity.ok(response);
 	}
+	
 
 	@PostMapping
 	public ResponseEntity<Map<String, Object>> inserirRecebedorPJ(
