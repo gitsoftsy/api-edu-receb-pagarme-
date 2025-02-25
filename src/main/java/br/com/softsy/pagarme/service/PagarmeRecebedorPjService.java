@@ -6,9 +6,11 @@ import java.util.Map;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import br.com.softsy.pagarme.model.PagarmeRecebedorPj;
 import br.com.softsy.pagarme.model.PagarmeRecebedorPjRespLegal;
+import br.com.softsy.pagarme.model.RecebedorTemp;
 import br.com.softsy.pagarme.repository.BancoRepository;
 import br.com.softsy.pagarme.repository.ContaRepository;
 import br.com.softsy.pagarme.repository.OcupacaoRepository;
@@ -111,12 +113,24 @@ public class PagarmeRecebedorPjService {
 	}
 
 	@Transactional
-	public PagarmeRecebedorPj inserirRecebedorPJ(Long idRecebedorTemp, CadastroPagarmeRecebedorPjDTO cadastroDTO) {
+	public PagarmeRecebedorPj inserirRecebedorPJ(Long idRecebedorTemp, Long headerIdConta,
+			CadastroPagarmeRecebedorPjDTO cadastroDTO) {
+
 		if (idRecebedorTemp == null) {
 			throw new IllegalArgumentException("O ID do Recebedor Temporário não pode ser nulo.");
 		}
 
 		validarIdsExistentes(cadastroDTO);
+
+		RecebedorTemp recebedorTemp = recebedorTempRepository.findById(idRecebedorTemp)
+				.orElseThrow(() -> new IllegalArgumentException("Registro temporário não encontrado."));
+
+		Long idContaFromTemp = recebedorTemp.getConta().getIdConta();
+
+		if (!headerIdConta.equals(idContaFromTemp)) {
+			throw new IllegalArgumentException(
+					"O idConta informado no header não coincide com o registrado no Recebedor Temporário.");
+		}
 
 		String cnpj = recebedorTempRepository.findCnpjByRecebedorTempId(idRecebedorTemp).orElseThrow(
 				() -> new IllegalArgumentException("Não foi possível encontrar o CNPJ do Recebedor Temporário."));

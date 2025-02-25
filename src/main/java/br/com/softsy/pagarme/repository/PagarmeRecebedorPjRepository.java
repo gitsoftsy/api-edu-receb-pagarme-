@@ -49,4 +49,6 @@ public interface PagarmeRecebedorPjRepository extends JpaRepository<PagarmeReceb
 			@Param("p_telefone_resp_legal") String telefoneRespLegal,
 			@Param("p_celular_resp_legal") String celularRespLegal);
 
+	Optional<PagarmeRecebedorPj> findById(Long id);
+
 }

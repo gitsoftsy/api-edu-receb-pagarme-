@@ -52,16 +52,22 @@ public class PagarmeRecebedorPjController {
 
 	@PostMapping
 	public ResponseEntity<Map<String, Object>> inserirRecebedorPJ(
-			@Valid @RequestBody CadastroPagarmeRecebedorPjDTO cadasproRecebedorPjDTO) {
+			@RequestHeader(value = "idConta", required = false) Long headerIdConta,
+			@Valid @RequestBody CadastroPagarmeRecebedorPjDTO cadastroRecebedorPjDTO) {
 
 		try {
-			if (cadasproRecebedorPjDTO.getIdRecebedorTemp() == null) {
+			if (headerIdConta == null) {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+						.body(Collections.singletonMap("mensagem", "O idConta é obrigatório."));
+			}
+
+			if (cadastroRecebedorPjDTO.getIdRecebedorTemp() == null) {
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 						.body(Collections.singletonMap("mensagem", "O ID do Recebedor Temporário não pode ser nulo."));
 			}
 
-			PagarmeRecebedorPj recebedorCriado = recebedorPjService
-					.inserirRecebedorPJ(cadasproRecebedorPjDTO.getIdRecebedorTemp(), cadasproRecebedorPjDTO);
+			PagarmeRecebedorPj recebedorCriado = recebedorPjService.inserirRecebedorPJ(
+					cadastroRecebedorPjDTO.getIdRecebedorTemp(), headerIdConta, cadastroRecebedorPjDTO);
 
 			Map<String, Object> respostaFinal = new LinkedHashMap<>();
 			respostaFinal.put("mensagem", "Recebedor PJ inserido com sucesso!");
@@ -73,7 +79,9 @@ public class PagarmeRecebedorPjController {
 		} catch (UniqueException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 					.body(Collections.singletonMap("mensagem", e.getMessage()));
-
+		} catch (IllegalArgumentException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body(Collections.singletonMap("mensagem", e.getMessage()));
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body(Collections.singletonMap("mensagem", "Erro interno ao inserir o Recebedor PJ."));
