@@ -32,7 +32,7 @@ public class PagarmeRecebedorPF {
 
 	@ManyToOne
 	@JoinColumn(name = "ID_CONTA")
-	private Conta conta;
+	private Conta entidadeConta;
 
 	@ManyToOne
 	@JoinColumn(name = "ID_PAGARME_RECEBEDOR")

@@ -71,7 +71,8 @@ public class PagarmeRecebedorPfDTO {
 
 	public PagarmeRecebedorPfDTO(PagarmeRecebedorPF pagarmeRecebedorPf) {
 	    this.idPagarmeRecebedorPF = pagarmeRecebedorPf.getIdPagarmeRecebedorPF();
-	    this.idConta = (pagarmeRecebedorPf.getConta() != null) ? pagarmeRecebedorPf.getConta().getIdConta() : null;
+//	    this.idConta = (pagarmeRecebedorPf.getConta() != null) ? pagarmeRecebedorPf.getConta().getIdConta() : null;
+	    this.idConta = (pagarmeRecebedorPf.getEntidadeConta() != null) ? pagarmeRecebedorPf.getEntidadeConta().getIdConta() : null;
 	    this.idPagarmeRecebedor = (pagarmeRecebedorPf.getPagarmeRecebedor() != null) ? pagarmeRecebedorPf.getPagarmeRecebedor().getIdPagarmeRecebedor() : null;
 	    this.cpf = pagarmeRecebedorPf.getCpf();
 	    this.site = pagarmeRecebedorPf.getSite();

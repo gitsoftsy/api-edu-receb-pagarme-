@@ -161,7 +161,8 @@ public class PagarmeRecebedorPjService {
 		respostaFormatada.put("email",
 				recebedor.getPagarmeRecebedor() != null ? recebedor.getPagarmeRecebedor().getEmail() : null);
 		respostaFormatada.put("transfIntervalo", "DIARIO");
-		respostaFormatada.put("antecipAut", true);
+		respostaFormatada.put("antecipAut",
+				recebedor.getPagarmeRecebedor() != null ? recebedor.getPagarmeRecebedor().getAntecipAut() : false);
 		respostaFormatada.put("telefone",
 				recebedor.getPagarmeRecebedor() != null ? recebedor.getPagarmeRecebedor().getTelefone() : null);
 		respostaFormatada.put("celular",

@@ -19,7 +19,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CadastroPagarmeRecebedorPjDTO {
 
-//	@NotNull(message = "idRecebedorTemp não pode ser nulo")
 	private Long idRecebedorTemp;
 
 	/////// Dados da TBL_PAGARME_RECEBEDOR_PJ ////////
