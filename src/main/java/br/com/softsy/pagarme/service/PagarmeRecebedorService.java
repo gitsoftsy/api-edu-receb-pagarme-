@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -86,6 +87,19 @@ public class PagarmeRecebedorService {
 		}
 
 		return mappedResultList;
+	}
+
+	@Transactional
+	public void atualizarStatusRecebedor(Long idRecebedor, String ativo) {
+		if (!ativo.equalsIgnoreCase("S") && !ativo.equalsIgnoreCase("N")) {
+			throw new IllegalArgumentException("O status deve ser 'S' (ativo) ou 'N' (inativo).");
+		}
+
+		PagarmeRecebedor recebedor = repository.findById(idRecebedor)
+				.orElseThrow(() -> new IllegalArgumentException("idRecebedor não encontrado."));
+
+		recebedor.setAtivo(ativo.toUpperCase().charAt(0));
+		repository.save(recebedor);
 	}
 
 }

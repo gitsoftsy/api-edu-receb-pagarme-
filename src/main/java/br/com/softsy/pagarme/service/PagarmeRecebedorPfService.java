@@ -46,6 +46,13 @@ public class PagarmeRecebedorPfService {
 		return repository.findAll();
 	}
 
+	public Map<String, Object> buscarRecebedorPfPorId(Long idRecebedorPf) {
+		PagarmeRecebedorPF recebedor = repository.findById(idRecebedorPf)
+				.orElseThrow(() -> new IllegalArgumentException());
+
+		return formatarRetorno(recebedor);
+	}
+
 	public CpfResponse verificarCpf(String cpf, Long idConta) {
 
 		if (!contaRepository.existsById(idConta)) {
@@ -150,8 +157,8 @@ public class PagarmeRecebedorPfService {
 		respostaFormatada.put("email",
 				recebedor.getPagarmeRecebedor() != null ? recebedor.getPagarmeRecebedor().getEmail() : null);
 		respostaFormatada.put("transfIntervalo", "DIARIO");
-		respostaFormatada.put("antecipAut", 
-			    recebedor.getPagarmeRecebedor() != null ? recebedor.getPagarmeRecebedor().getAntecipAut() : false);
+		respostaFormatada.put("antecipAut",
+				recebedor.getPagarmeRecebedor() != null ? recebedor.getPagarmeRecebedor().getAntecipAut() : false);
 
 		respostaFormatada.put("telefone",
 				recebedor.getPagarmeRecebedor() != null ? recebedor.getPagarmeRecebedor().getTelefone() : null);

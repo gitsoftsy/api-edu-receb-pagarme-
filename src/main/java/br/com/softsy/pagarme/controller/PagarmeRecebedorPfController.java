@@ -43,6 +43,20 @@ public class PagarmeRecebedorPfController {
 		return ResponseEntity.ok(service.listarTodos());
 	}
 
+	@GetMapping("/{idRecebedorPf}")
+	public ResponseEntity<Map<String, Object>> buscarRecebedorPf(@PathVariable Long idRecebedorPf) {
+		try {
+			Map<String, Object> resposta = service.buscarRecebedorPfPorId(idRecebedorPf);
+			return ResponseEntity.ok(resposta);
+		} catch (IllegalArgumentException e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND)
+					.body(Collections.singletonMap("mensagem", "Recebedor PF não encontrado."));
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(Collections.singletonMap("mensagem", "Erro ao buscar recebedor PF."));
+		}
+	}
+
 	@GetMapping("/existByCpf")
 	public ResponseEntity<CpfResponse> verificarCpf(@RequestHeader(value = "idConta", required = false) Long idConta,
 			@RequestParam(value = "cpf", required = false) String cpf) {
