@@ -3,23 +3,23 @@ package br.com.softsy.pagarme.service;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
+
+import javax.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.softsy.pagarme.dto.CadastroRecebedorTempDTO;
 import br.com.softsy.pagarme.infra.config.PasswordEncrypt;
 import br.com.softsy.pagarme.infra.exception.UniqueException;
-
+import br.com.softsy.pagarme.model.Conta;
 import br.com.softsy.pagarme.model.RecebedorTemp;
 import br.com.softsy.pagarme.repository.ContaRepository;
-import br.com.softsy.pagarme.repository.RecebedorTempRepository;
-import br.com.softsy.pagarme.repository.PagarmeRecebedorRepository;
-import br.com.softsy.pagarme.repository.PagarmeRecebedorPjRepository;
 import br.com.softsy.pagarme.repository.PagarmeRecebedorPfRepository;
-import br.com.softsy.pagarme.dto.CadastroRecebedorTempDTO;
+import br.com.softsy.pagarme.repository.PagarmeRecebedorPjRepository;
+import br.com.softsy.pagarme.repository.PagarmeRecebedorRepository;
+import br.com.softsy.pagarme.repository.RecebedorTempRepository;
 
 @Service
 public class RecebedorTempService {
@@ -38,6 +38,9 @@ public class RecebedorTempService {
 
 	@Autowired
 	private PagarmeRecebedorPfRepository pagarmeRecebedorPFRepository;
+	
+	@Autowired
+	private EmailService emailService;
 
 	@Autowired
 	private PasswordEncrypt passwordEncrypt;
@@ -49,54 +52,81 @@ public class RecebedorTempService {
 	@Transactional
 	public RecebedorTemp inserirRecebedorTemp(CadastroRecebedorTempDTO cadastroRecebedorTempDTO) {
 
-		if (pagarmeRecebedorRepository.existsByEmail(cadastroRecebedorTempDTO.getEmail())) {
-			throw new UniqueException("Já existe um recebedor na base com este e-mail cadastrado.");
-		}
+	    if (pagarmeRecebedorRepository.existsByEmail(cadastroRecebedorTempDTO.getEmail())) {
+	        throw new UniqueException("Já existe um recebedor na base com este e-mail cadastrado.");
+	    }
 
-		if (pagarmeRecebedorPJRepository.existsByCnpj(cadastroRecebedorTempDTO.getDocumento())) {
-			throw new UniqueException("Já existe um recebedor na base com este documento cadastrado.");
-		}
+	    if (pagarmeRecebedorPJRepository.existsByCnpj(cadastroRecebedorTempDTO.getDocumento())) {
+	        throw new UniqueException("Já existe um recebedor na base com este documento cadastrado.");
+	    }
 
-		if (pagarmeRecebedorPFRepository.existsByCpf(cadastroRecebedorTempDTO.getDocumento())) {
-			throw new UniqueException("Já existe um recebedor na base com este CPF cadastrado.");
-		}
+	    if (pagarmeRecebedorPFRepository.existsByCpf(cadastroRecebedorTempDTO.getDocumento())) {
+	        throw new UniqueException("Já existe um recebedor na base com este CPF cadastrado.");
+	    }
 
-		String documento = cadastroRecebedorTempDTO.getDocumento();
-		if ("PF".equalsIgnoreCase(cadastroRecebedorTempDTO.getTipoPessoa()) && documento.length() != 11) {
-			throw new IllegalArgumentException("CPF inválido! O CPF deve conter exatamente 11 caracteres.");
-		}
+	    String documento = cadastroRecebedorTempDTO.getDocumento();
+	    if ("PF".equalsIgnoreCase(cadastroRecebedorTempDTO.getTipoPessoa()) && documento.length() != 11) {
+	        throw new IllegalArgumentException("CPF inválido! O CPF deve conter exatamente 11 caracteres.");
+	    }
 
-		if ("PJ".equalsIgnoreCase(cadastroRecebedorTempDTO.getTipoPessoa()) && documento.length() != 14) {
-			throw new IllegalArgumentException("CNPJ inválido! O CNPJ deve conter exatamente 14 caracteres.");
-		}
+	    if ("PJ".equalsIgnoreCase(cadastroRecebedorTempDTO.getTipoPessoa()) && documento.length() != 14) {
+	        throw new IllegalArgumentException("CNPJ inválido! O CNPJ deve conter exatamente 14 caracteres.");
+	    }
 
-		if (repository.findByDocumento(documento).isPresent()) {
-			throw new UniqueException("Já existe um recebedor temporário com este documento cadastrado.");
-		}
+	    if (repository.findByDocumento(documento).isPresent()) {
+	        throw new UniqueException("Já existe um recebedor temporário com este documento cadastrado.");
+	    }
 
-		if (repository.existsByEmail(cadastroRecebedorTempDTO.getEmail())) {
-			throw new UniqueException("Já existe um recebedor temporário com este e-mail cadastrado.");
-		}
+	    if (repository.existsByEmail(cadastroRecebedorTempDTO.getEmail())) {
+	        throw new UniqueException("Já existe um recebedor temporário com este e-mail cadastrado.");
+	    }
 
-		String baseSenha = documento.substring(0, Math.min(5, documento.length()));
-		String senhaCriptografada = passwordEncrypt.hashPassword(baseSenha);
+	    String baseSenha = documento.substring(0, Math.min(5, documento.length()));
+	    String senhaCriptografada = passwordEncrypt.hashPassword(baseSenha);
 
-		Character transfAutomatica = (cadastroRecebedorTempDTO.getTransfAutomatica() != null)
-				? cadastroRecebedorTempDTO.getTransfAutomatica()
-				: 'S';
-		Character transfIntervalo = (cadastroRecebedorTempDTO.getTransfIntervalo() != null)
-				? cadastroRecebedorTempDTO.getTransfIntervalo()
-				: 'M';
-		Integer transfDia = (cadastroRecebedorTempDTO.getTransfDia() != null) ? cadastroRecebedorTempDTO.getTransfDia()
-				: 0;
+	    Character transfAutomatica = (cadastroRecebedorTempDTO.getTransfAutomatica() != null)
+	            ? cadastroRecebedorTempDTO.getTransfAutomatica()
+	            : 'S';
+	    Character transfIntervalo = (cadastroRecebedorTempDTO.getTransfIntervalo() != null)
+	            ? cadastroRecebedorTempDTO.getTransfIntervalo()
+	            : 'M';
+	    Integer transfDia = (cadastroRecebedorTempDTO.getTransfDia() != null) ? cadastroRecebedorTempDTO.getTransfDia()
+	            : 0;
 
-		repository.inserirRecebedorTemp(cadastroRecebedorTempDTO.getIdConta(), cadastroRecebedorTempDTO.getIdUsuario(),
-				cadastroRecebedorTempDTO.getTipoPessoa(), cadastroRecebedorTempDTO.getNome(), documento,
-				cadastroRecebedorTempDTO.getEmail(), senhaCriptografada, transfAutomatica, transfIntervalo, transfDia,
-				cadastroRecebedorTempDTO.getAntecipAut());
+	    repository.inserirRecebedorTemp(cadastroRecebedorTempDTO.getIdConta(), cadastroRecebedorTempDTO.getIdUsuario(),
+	            cadastroRecebedorTempDTO.getTipoPessoa(), cadastroRecebedorTempDTO.getNome(), documento,
+	            cadastroRecebedorTempDTO.getEmail(), senhaCriptografada, transfAutomatica, transfIntervalo, transfDia,
+	            cadastroRecebedorTempDTO.getAntecipAut());
 
-		return repository.findTopByOrderByIdRecebedorTempDesc();
+	    RecebedorTemp recebedorCriado = repository.findTopByOrderByIdRecebedorTempDesc();
+
+	    Conta conta = contaRepository.findById(cadastroRecebedorTempDTO.getIdConta())
+	            .orElseThrow(() -> new EntityNotFoundException("Conta não encontrada para o ID: " + cadastroRecebedorTempDTO.getIdConta()));
+	    String nomeConta = conta.getConta();
+
+	    // Enviar e-mail de confirmação após o cadastro
+	    try {
+	        String subject = "Cadastro Iniciado - Complete seu Cadastro!";
+	        String message = String.format(
+	                "Prezado Parceiro,\r\n"
+	                + "\r\n"
+	                + "Seu cadastro no %s foi iniciado e agora você precisa completá-lo.\r\n"
+	                + "\r\n"
+	                + "Para ter acesso ao sistema, clique no botão abaixo. No campo usuário, informe o e-mail que recebeu essa mensagem e, no campo senha, os 5 primeiros dígitos do seu CPF ou CNPJ.\r\n"
+	                + "\r\n"
+	                + "Completar Cadastro", nomeConta);
+
+	        emailService.sendEmail(cadastroRecebedorTempDTO.getIdConta(), cadastroRecebedorTempDTO.getEmail(), subject, message);
+	        System.out.println("E-mail enviado com sucesso para " + cadastroRecebedorTempDTO.getEmail());
+	        
+	    } catch (Exception e) {
+	        System.err.println("Erro ao enviar e-mail: " + e.getMessage());
+	    }
+
+	    return recebedorCriado;
 	}
+
+
 
 	public Map<String, Object> formatarRecebedorTemp(RecebedorTemp recebedor) {
 		Map<String, Object> map = new LinkedHashMap<>();
