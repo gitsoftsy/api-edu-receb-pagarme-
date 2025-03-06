@@ -89,6 +89,7 @@ public class PagarmeRecebedorService {
 		return mappedResultList;
 	}
 
+	//ativar desativar recebedor
 	@Transactional
 	public void atualizarStatusRecebedor(Long idRecebedor, String ativo) {
 		if (!ativo.equalsIgnoreCase("S") && !ativo.equalsIgnoreCase("N")) {

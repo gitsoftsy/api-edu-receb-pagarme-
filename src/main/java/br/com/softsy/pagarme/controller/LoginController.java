@@ -10,8 +10,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.softsy.pagarme.dto.LoginDTO;
 import br.com.softsy.pagarme.dto.RecebedorLoginDTO;
-import br.com.softsy.pagarme.security.RecebedorAutenticador.RecebedorDesativadoException;
+//import br.com.softsy.pagarme.security.RecebedorAutenticador.RecebedorDesativadoException;
 import br.com.softsy.pagarme.service.LoginService;
+import br.com.softsy.pagarme.infra.exception.RecebedorDesativadoException;
+import br.com.softsy.pagarme.infra.exception.RecebedorDesativadoException;
+
+
+
+
 
 @RestController
 @RequestMapping("/login")
