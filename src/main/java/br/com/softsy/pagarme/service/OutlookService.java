@@ -1,5 +1,8 @@
 package br.com.softsy.pagarme.service;
 
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Properties;
 
 import javax.mail.Message;
@@ -27,9 +30,8 @@ public class OutlookService implements EmailService {
     private ProvedorEmailContaOutlookRepository provedorEmailContaOutlookRepository;
     
     @Override
-    public void sendEmail(Long idConta, String to, String subject, String message) throws Exception {
+    public void sendEmail(Long idConta, String to, String subject, String nomeConta, String linkCadastro) throws Exception {
         ProvedorEmailConta provedorEmailConta = provedorEmailContaRepository.findByIdContaAndIdProvedorEmail(idConta, 1L);
-        System.out.println(provedorEmailConta);
         if (provedorEmailConta == null) {
             throw new Exception("Configuração do provedor de e-mail não encontrada ou não configurada para Outlook.");
         }
@@ -47,18 +49,30 @@ public class OutlookService implements EmailService {
         props.put("mail.smtp.ssl.protocols", "TLSv1.2");
 
         EmailAuthenticator authenticator = new EmailAuthenticator(provedorEmailContaOutlook.getUsername(), "#@Sum@re#@");
-
         Session session = Session.getInstance(props, authenticator);
+
+        // 🔄 Carregar template HTML
+        String templatePath = "src/main/resources/templates/email-confirmacao.html";
+        String htmlContent = new String(Files.readAllBytes(Paths.get(templatePath)), StandardCharsets.UTF_8);
+        htmlContent = htmlContent.replace("{{nomeConta}}", nomeConta);
+        htmlContent = htmlContent.replace("{{linkCadastro}}", linkCadastro);
 
         Message mimeMessage = new MimeMessage(session);
         mimeMessage.setFrom(new InternetAddress(provedorEmailContaOutlook.getUsername()));
         mimeMessage.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
         mimeMessage.setSubject(subject);
-        mimeMessage.setText(message);
+        mimeMessage.setContent(htmlContent, "text/html; charset=UTF-8");
 
         Transport.send(mimeMessage);
         System.out.println("Outlook: E-mail enviado para " + to);
     }
+
+	@Override
+	public void sendEmail(Long idConta, String to, String subject, String message) throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 
 }

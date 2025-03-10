@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        .email-header {
+            text-align: center;
+            background-color: #4CAF50;
+            color: #fff;
+            padding: 10px;
+            border-radius: 8px 8px 0 0;
+        }
+        .email-body {
+            padding: 20px;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        .btn {
+            display: inline-block;
+            background-color: #4CAF50;
+            color: #fff;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="email-header">
+            <h2>Cadastro Iniciado - Complete seu Cadastro!</h2>
+        </div>
+        <div class="email-body">
+            <p>Prezado Parceiro,</p>
+            <p>Seu cadastro no <strong>{{nomeConta}}</strong> foi iniciado e agora você precisa completá-lo.</p>
+            <p>Para ter acesso ao sistema, clique no botão abaixo. No campo usuário, informe o e-mail que recebeu essa mensagem e, no campo senha, os 5 primeiros dígitos do seu CPF ou CNPJ.</p>
+            <p style="text-align: center;">
+                <a href="{{linkCadastro}}" class="btn">Completar Cadastro</a>
+            </p>
+            <p>Se você não solicitou este cadastro, ignore esta mensagem.</p>
+        </div>
+    </div>
+</body>
+</html>

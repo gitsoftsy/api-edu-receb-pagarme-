@@ -51,15 +51,12 @@ public class RecebedorTempService {
 
 	@Transactional
 	public RecebedorTemp inserirRecebedorTemp(CadastroRecebedorTempDTO cadastroRecebedorTempDTO) {
-
 	    if (pagarmeRecebedorRepository.existsByEmail(cadastroRecebedorTempDTO.getEmail())) {
 	        throw new UniqueException("Já existe um recebedor na base com este e-mail cadastrado.");
 	    }
-
 	    if (pagarmeRecebedorPJRepository.existsByCnpj(cadastroRecebedorTempDTO.getDocumento())) {
 	        throw new UniqueException("Já existe um recebedor na base com este documento cadastrado.");
 	    }
-
 	    if (pagarmeRecebedorPFRepository.existsByCpf(cadastroRecebedorTempDTO.getDocumento())) {
 	        throw new UniqueException("Já existe um recebedor na base com este CPF cadastrado.");
 	    }
@@ -68,7 +65,6 @@ public class RecebedorTempService {
 	    if ("PF".equalsIgnoreCase(cadastroRecebedorTempDTO.getTipoPessoa()) && documento.length() != 11) {
 	        throw new IllegalArgumentException("CPF inválido! O CPF deve conter exatamente 11 caracteres.");
 	    }
-
 	    if ("PJ".equalsIgnoreCase(cadastroRecebedorTempDTO.getTipoPessoa()) && documento.length() != 14) {
 	        throw new IllegalArgumentException("CNPJ inválido! O CNPJ deve conter exatamente 14 caracteres.");
 	    }
@@ -76,7 +72,6 @@ public class RecebedorTempService {
 	    if (repository.findByDocumento(documento).isPresent()) {
 	        throw new UniqueException("Já existe um recebedor temporário com este documento cadastrado.");
 	    }
-
 	    if (repository.existsByEmail(cadastroRecebedorTempDTO.getEmail())) {
 	        throw new UniqueException("Já existe um recebedor temporário com este e-mail cadastrado.");
 	    }
@@ -90,35 +85,34 @@ public class RecebedorTempService {
 	    Character transfIntervalo = (cadastroRecebedorTempDTO.getTransfIntervalo() != null)
 	            ? cadastroRecebedorTempDTO.getTransfIntervalo()
 	            : 'M';
-	    Integer transfDia = (cadastroRecebedorTempDTO.getTransfDia() != null) ? cadastroRecebedorTempDTO.getTransfDia()
-	            : 0;
+	    Integer transfDia = (cadastroRecebedorTempDTO.getTransfDia() != null) ? cadastroRecebedorTempDTO.getTransfDia() : 0;
 
-	    repository.inserirRecebedorTemp(cadastroRecebedorTempDTO.getIdConta(), cadastroRecebedorTempDTO.getIdUsuario(),
-	            cadastroRecebedorTempDTO.getTipoPessoa(), cadastroRecebedorTempDTO.getNome(), documento,
-	            cadastroRecebedorTempDTO.getEmail(), senhaCriptografada, transfAutomatica, transfIntervalo, transfDia,
-	            cadastroRecebedorTempDTO.getAntecipAut());
+	    repository.inserirRecebedorTemp(
+	            cadastroRecebedorTempDTO.getIdConta(),
+	            cadastroRecebedorTempDTO.getIdUsuario(),
+	            cadastroRecebedorTempDTO.getTipoPessoa(),
+	            cadastroRecebedorTempDTO.getNome(),
+	            documento,
+	            cadastroRecebedorTempDTO.getEmail(),
+	            senhaCriptografada,
+	            transfAutomatica,
+	            transfIntervalo,
+	            transfDia,
+	            cadastroRecebedorTempDTO.getAntecipAut()
+	    );
 
 	    RecebedorTemp recebedorCriado = repository.findTopByOrderByIdRecebedorTempDesc();
 
 	    Conta conta = contaRepository.findById(cadastroRecebedorTempDTO.getIdConta())
 	            .orElseThrow(() -> new EntityNotFoundException("Conta não encontrada para o ID: " + cadastroRecebedorTempDTO.getIdConta()));
 	    String nomeConta = conta.getConta();
+	    String linkCadastro = "https://www.youtube.com/";
 
 	    // Enviar e-mail de confirmação após o cadastro
 	    try {
 	        String subject = "Cadastro Iniciado - Complete seu Cadastro!";
-	        String message = String.format(
-	                "Prezado Parceiro,\r\n"
-	                + "\r\n"
-	                + "Seu cadastro no %s foi iniciado e agora você precisa completá-lo.\r\n"
-	                + "\r\n"
-	                + "Para ter acesso ao sistema, clique no botão abaixo. No campo usuário, informe o e-mail que recebeu essa mensagem e, no campo senha, os 5 primeiros dígitos do seu CPF ou CNPJ.\r\n"
-	                + "\r\n"
-	                + "Completar Cadastro", nomeConta);
-
-	        emailService.sendEmail(cadastroRecebedorTempDTO.getIdConta(), cadastroRecebedorTempDTO.getEmail(), subject, message);
+	        emailService.sendEmail(cadastroRecebedorTempDTO.getIdConta(), cadastroRecebedorTempDTO.getEmail(), subject, nomeConta, linkCadastro);
 	        System.out.println("E-mail enviado com sucesso para " + cadastroRecebedorTempDTO.getEmail());
-	        
 	    } catch (Exception e) {
 	        System.err.println("Erro ao enviar e-mail: " + e.getMessage());
 	    }
