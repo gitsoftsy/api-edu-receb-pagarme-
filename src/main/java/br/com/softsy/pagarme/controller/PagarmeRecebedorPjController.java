@@ -83,6 +83,7 @@ public class PagarmeRecebedorPjController {
 					.body(Collections.singletonMap("mensagem", e.getMessage()));
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					
 					.body(Collections.singletonMap("mensagem", "Erro interno ao inserir o Recebedor PJ."));
 		}
 	}

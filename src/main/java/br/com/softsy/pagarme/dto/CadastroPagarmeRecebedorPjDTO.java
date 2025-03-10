@@ -37,6 +37,7 @@ public class CadastroPagarmeRecebedorPjDTO {
 	@NotNull(message = "A razão social é obrigatória")
 	private String razaoSocial;
 
+	@Size(max = 255, message = "O site deve ter no máximo 255 caracteres")
 	private String site;
 
 	@NotNull(message = "O tipo de empresa é obrigatório")
@@ -69,6 +70,7 @@ public class CadastroPagarmeRecebedorPjDTO {
 	@NotNull(message = "O número do endereço é obrigatório")
 	private String numero;
 
+	@Size(max = 255, message = "O complemento deve ter no máximo 255 caracteres")
 	private String complemento;
 
 	@NotNull(message = "O bairro é obrigatório")
@@ -161,6 +163,43 @@ public class CadastroPagarmeRecebedorPjDTO {
 	@Size(min = 12, max = 12, message = "Celular deve conter exatamente 12 caracteres")
 	private String celularRespLegal;
 
+	public String getSite() {
+		return site != null ? site : "";
+	}
+
+	public String getComplemento() {
+		return complemento != null ? complemento : "";
+	}
+
+	public String getPontoReferencia() {
+		return pontoReferencia != null ? pontoReferencia : "";
+	}
+
+	public String getComplementoRespLegal() {
+		return complementoRespLegal != null ? complementoRespLegal : "";
+	}
+
+	public String getPontoReferenciaRespLegal() {
+		return pontoReferenciaRespLegal != null ? pontoReferenciaRespLegal : "";
+	}
+
+    public String getTelefone() {
+        return telefone != null ? telefone : "";
+    }
+
+    public String getCelular() {
+        return celular != null ? celular : "";
+    }
+
+    public String getTelefoneRespLegal() {
+        return telefoneRespLegal != null ? telefoneRespLegal : "";
+    }
+
+    public String getCelularRespLegal() {
+        return celularRespLegal != null ? celularRespLegal : "";
+    }
+    
+    
 	public CadastroPagarmeRecebedorPjDTO(PagarmeRecebedorPj pagarmeRecebedorPj) {
 		this.idPagarmeRecebedorPj = pagarmeRecebedorPj.getIdPagarmeRecebedorPj();
 		this.idConta = pagarmeRecebedorPj.getConta() != null ? pagarmeRecebedorPj.getConta().getIdConta() : null;
