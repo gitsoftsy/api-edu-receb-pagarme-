@@ -35,8 +35,12 @@ public class RecebedorAutenticador implements Autenticador {
 				throw new SenhaInvalidaException("Senha incorreta.");
 			}
 
+			Long idConta = recebedorTemp.getConta() != null ? recebedorTemp.getConta().getIdConta() : null;
+
 			return new RecebedorLoginDTO(recebedorTemp.getIdRecebedorTemp(), recebedorTemp.getNome(),
-					recebedorTemp.getDocumento(), "Temporária");
+					recebedorTemp.getDocumento(), "Temporária", idConta
+
+			);
 		}
 
 		PagarmeRecebedor recebedor = repository.findPagarmeRecebedorByEmailAndAtivo(login.getEmail(), 'S');
@@ -58,8 +62,13 @@ public class RecebedorAutenticador implements Autenticador {
 				documento = recebedor.getPagarmeRecebedorPj().getCnpj();
 			}
 
-			return new RecebedorLoginDTO(recebedor.getIdPagarmeRecebedor(), nome, documento, "Principal");
+			Long idConta = recebedor.getConta() != null ? recebedor.getConta().getIdConta() : null;
+
+			return new RecebedorLoginDTO(recebedor.getIdPagarmeRecebedor(), nome, documento, "Principal", idConta
+
+			);
 		}
+
 		throw new RecebedorDesativadoException("Usuário não encontrado.");
 	}
 
