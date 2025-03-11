@@ -9,9 +9,13 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+import org.springframework.lang.Nullable;
+
+
 import br.com.softsy.pagarme.model.PagarmeRecebedorPj;
 import br.com.softsy.pagarme.model.PagarmeRecebedor;
 import br.com.softsy.pagarme.model.PagarmeRecebedorPjRespLegal;
+import br.com.softsy.pagarme.utils.StringUtil;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -37,6 +41,7 @@ public class CadastroPagarmeRecebedorPjDTO {
 	@NotNull(message = "A razão social é obrigatória")
 	private String razaoSocial;
 
+	@Nullable
 	@Size(max = 255, message = "O site deve ter no máximo 255 caracteres")
 	private String site;
 
@@ -70,6 +75,7 @@ public class CadastroPagarmeRecebedorPjDTO {
 	@NotNull(message = "O número do endereço é obrigatório")
 	private String numero;
 
+	@Nullable
 	@Size(max = 255, message = "O complemento deve ter no máximo 255 caracteres")
 	private String complemento;
 
@@ -87,14 +93,17 @@ public class CadastroPagarmeRecebedorPjDTO {
 	@Pattern(regexp = "\\d{8}", message = "O CEP deve conter 8 dígitos numéricos")
 	private String cep;
 
+	@Nullable
 	@Size(max = 255, message = "O ponto de referência deve ter no máximo 255 caracteres")
 	private String pontoReferencia;
 
 	/////// Dados da TBL_PAGARME_RECEBEDOR ////////
 
+	@Nullable
 	@Size(min = 12, max = 12, message = "O telefone do Recebedor deve ter exatamente 12 caracteres")
 	private String telefone;
 
+	@Nullable
 	@Size(min = 12, max = 12, message = "O celular deve ter exatamente 12 caracteres")
 	private String celular;
 
@@ -135,6 +144,7 @@ public class CadastroPagarmeRecebedorPjDTO {
 	@Size(max = 10, message = "O número do endereço do responsável legal deve ter no máximo 10 caracteres")
 	private String numeroRespLegal;
 
+	@Nullable
 	@Size(max = 255)
 	private String complementoRespLegal;
 
@@ -154,49 +164,52 @@ public class CadastroPagarmeRecebedorPjDTO {
 	@Pattern(regexp = "\\d{8}", message = "CEP deve conter exatamente 8 dígitos numéricos")
 	private String cepRespLegal;
 
+	@Nullable
 	@Size(max = 255)
 	private String pontoReferenciaRespLegal;
 
+	@Nullable
 	@Size(min = 12, max = 12, message = "Telefone deve conter exatamente 12 caracteres")
 	private String telefoneRespLegal;
 
+	@Nullable
 	@Size(min = 12, max = 12, message = "Celular deve conter exatamente 12 caracteres")
 	private String celularRespLegal;
 
-	public String getSite() {
-		return site != null ? site : "";
-	}
+    public String getSite() {
+        return StringUtil.getOrEmpty(site);
+    }
 
-	public String getComplemento() {
-		return complemento != null ? complemento : "";
-	}
+    public String getComplemento() {
+        return StringUtil.getOrEmpty(complemento);
+    }
 
-	public String getPontoReferencia() {
-		return pontoReferencia != null ? pontoReferencia : "";
-	}
+    public String getPontoReferencia() {
+        return StringUtil.getOrEmpty(pontoReferencia);
+    }
 
-	public String getComplementoRespLegal() {
-		return complementoRespLegal != null ? complementoRespLegal : "";
-	}
+    public String getComplementoRespLegal() {
+        return StringUtil.getOrEmpty(complementoRespLegal);
+    }
 
-	public String getPontoReferenciaRespLegal() {
-		return pontoReferenciaRespLegal != null ? pontoReferenciaRespLegal : "";
-	}
+    public String getPontoReferenciaRespLegal() {
+        return StringUtil.getOrEmpty(pontoReferenciaRespLegal);
+    }
 
     public String getTelefone() {
-        return telefone != null ? telefone : "";
+        return StringUtil.getOrEmpty(telefone);
     }
 
     public String getCelular() {
-        return celular != null ? celular : "";
+        return StringUtil.getOrEmpty(celular);
     }
 
     public String getTelefoneRespLegal() {
-        return telefoneRespLegal != null ? telefoneRespLegal : "";
+        return StringUtil.getOrEmpty(telefoneRespLegal);
     }
 
     public String getCelularRespLegal() {
-        return celularRespLegal != null ? celularRespLegal : "";
+        return StringUtil.getOrEmpty(celularRespLegal);
     }
     
     

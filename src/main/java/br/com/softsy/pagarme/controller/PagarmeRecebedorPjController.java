@@ -2,6 +2,7 @@ package br.com.softsy.pagarme.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,9 +25,12 @@ import javax.validation.Valid;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @RequestMapping("/recebedorPj")
+@Validated
 public class PagarmeRecebedorPjController {
 
 	@Autowired
@@ -47,7 +51,6 @@ public class PagarmeRecebedorPjController {
 		CnpjResponse response = recebedorPjService.verificarCnpj(cnpj, idConta);
 		return ResponseEntity.ok(response);
 	}
-	
 
 	@PostMapping
 	public ResponseEntity<Map<String, Object>> inserirRecebedorPJ(
@@ -83,7 +86,7 @@ public class PagarmeRecebedorPjController {
 					.body(Collections.singletonMap("mensagem", e.getMessage()));
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					
+
 					.body(Collections.singletonMap("mensagem", "Erro interno ao inserir o Recebedor PJ."));
 		}
 	}

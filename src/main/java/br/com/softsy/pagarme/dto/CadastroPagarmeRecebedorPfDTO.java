@@ -11,7 +11,7 @@ import javax.validation.constraints.Size;
 
 import br.com.softsy.pagarme.model.PagarmeRecebedor;
 import br.com.softsy.pagarme.model.PagarmeRecebedorPF;
-
+import br.com.softsy.pagarme.utils.StringUtil;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -91,6 +91,26 @@ public class CadastroPagarmeRecebedorPfDTO {
 
 	@Size(min = 12, max = 12, message = "O celular deve ter exatamente 12 caracteres")
 	private String celular;
+	
+	public String getSite() {
+        return StringUtil.getOrEmpty(site);
+    }
+
+    public String getComplemento() {
+        return StringUtil.getOrEmpty(complemento);
+    }
+
+    public String getPontoReferencia() {
+        return StringUtil.getOrEmpty(pontoReferencia);
+    }
+
+    public String getTelefone() {
+        return StringUtil.getOrEmpty(telefone);
+    }
+
+    public String getCelular() {
+        return StringUtil.getOrEmpty(celular);
+    }
 
 	public CadastroPagarmeRecebedorPfDTO(PagarmeRecebedorPF pagarmeRecebedorPF) {
 		this.idPagarmeRecebedorPf = pagarmeRecebedorPF.getIdPagarmeRecebedorPF();
