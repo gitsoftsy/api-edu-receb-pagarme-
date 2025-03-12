@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        .email-header {
+            text-align: center;
+            background-color: #4CAF50;
+            color: #fff;
+            padding: 10px;
+            border-radius: 8px 8px 0 0;
+        }
+        .email-body {
+            padding: 20px;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        .btn {
+            display: inline-block;
+            background-color: #4CAF50;
+            color: #fff;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="email-body">
+            <p><strong>Prezado parceiro,</strong></p>
+            <p>Agora que você completou as informações da sua empresa na nossa plataforma, precisamos validá-las.</p>
+            <p>Essa é uma exigência do Banco Central, que todos os nossos parceiros preencham o formulário KYC da processadora de pagamentos, no nosso caso a Pagarme.</p>
+            <p>Você pode acessar a plataforma e fazer o envio dos documentos necessários pelo QRCode ou pelo botão abaixo.</p>
+            <p style="text-align: center;">
+                <a href="{{linkPlataforma}}" class="btn">Acessar Plataforma</a>
+            </p>
+            <p>Lembrando que o acesso precisa ser realizado de um smartphone.</p>
+        </div>
+    </div>
+</body>
+</html>

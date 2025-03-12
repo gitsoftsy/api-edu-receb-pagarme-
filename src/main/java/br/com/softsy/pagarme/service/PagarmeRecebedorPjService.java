@@ -3,11 +3,15 @@ package br.com.softsy.pagarme.service;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
+import br.com.softsy.pagarme.dto.CadastroPagarmeRecebedorPjDTO;
+import br.com.softsy.pagarme.infra.exception.UniqueException;
+import br.com.softsy.pagarme.model.Conta;
 import br.com.softsy.pagarme.model.PagarmeRecebedorPj;
 import br.com.softsy.pagarme.model.PagarmeRecebedorPjRespLegal;
 import br.com.softsy.pagarme.model.RecebedorTemp;
@@ -15,13 +19,9 @@ import br.com.softsy.pagarme.repository.BancoRepository;
 import br.com.softsy.pagarme.repository.ContaRepository;
 import br.com.softsy.pagarme.repository.OcupacaoRepository;
 import br.com.softsy.pagarme.repository.PagarmeRecebedorPjRepository;
-
 import br.com.softsy.pagarme.repository.RecebedorTempRepository;
 import br.com.softsy.pagarme.repository.TipoEmpresaRepository;
-
 import br.com.softsy.pagarme.response.CnpjResponse;
-import br.com.softsy.pagarme.dto.CadastroPagarmeRecebedorPjDTO;
-import br.com.softsy.pagarme.infra.exception.UniqueException;
 
 @Service
 public class PagarmeRecebedorPjService {
@@ -34,6 +34,9 @@ public class PagarmeRecebedorPjService {
 
 	@Autowired
 	private ContaRepository contaRepository;
+	
+	@Autowired
+	private EmailService emailService;
 
 	@Autowired
 	private TipoEmpresaRepository tipoEmpresaRepository;
@@ -118,36 +121,67 @@ public class PagarmeRecebedorPjService {
 
 	@Transactional
 	public PagarmeRecebedorPj inserirRecebedorPJ(Long idRecebedorTemp, Long headerIdConta,
-			CadastroPagarmeRecebedorPjDTO cadastroDTO) {
+	        CadastroPagarmeRecebedorPjDTO cadastroDTO) {
 
-		if (idRecebedorTemp == null) {
-			throw new IllegalArgumentException("O ID do Recebedor Temporário não pode ser nulo.");
-		}
+	    if (idRecebedorTemp == null) {
+	        throw new IllegalArgumentException("O ID do Recebedor Temporário não pode ser nulo.");
+	    }
 
-		validarIdsExistentes(cadastroDTO);
+	    validarIdsExistentes(cadastroDTO);
 
-		RecebedorTemp recebedorTemp = recebedorTempRepository.findById(idRecebedorTemp)
-				.orElseThrow(() -> new IllegalArgumentException("Registro temporário não encontrado."));
+	    RecebedorTemp recebedorTemp = recebedorTempRepository.findById(idRecebedorTemp)
+	            .orElseThrow(() -> new IllegalArgumentException("Registro temporário não encontrado."));
 
-		Long idContaFromTemp = recebedorTemp.getConta().getIdConta();
+	    Long idContaFromTemp = recebedorTemp.getConta().getIdConta();
 
-		if (!headerIdConta.equals(idContaFromTemp)) {
-			throw new IllegalArgumentException(
-					"O idConta informado no header não coincide com o registrado no Recebedor Temporário.");
-		}
+	    if (!headerIdConta.equals(idContaFromTemp)) {
+	        throw new IllegalArgumentException(
+	                "O idConta informado no header não coincide com o registrado no Recebedor Temporário.");
+	    }
 
-		String cnpj = recebedorTempRepository.findCnpjByRecebedorTempId(idRecebedorTemp).orElseThrow(
-				() -> new IllegalArgumentException("Não foi possível encontrar o CNPJ do Recebedor Temporário."));
+	    String cnpj = recebedorTempRepository.findCnpjByRecebedorTempId(idRecebedorTemp).orElseThrow(
+	            () -> new IllegalArgumentException("Não foi possível encontrar o CNPJ do Recebedor Temporário."));
 
-		if (recebedorPjRepository.existsByCnpj(cnpj)) {
-			throw new IllegalArgumentException("Já existe um recebedor PJ com o CNPJ informado.");
-		}
+	    if (recebedorPjRepository.existsByCnpj(cnpj)) {
+	        throw new IllegalArgumentException("Já existe um recebedor PJ com o CNPJ informado.");
+	    }
 
-		executarProcedureInsercaoRecebedorPj(cadastroDTO);
+	    executarProcedureInsercaoRecebedorPj(cadastroDTO);
 
-		return recebedorPjRepository.findByCnpj(cnpj).orElseThrow(
-				() -> new IllegalArgumentException("Erro ao buscar o recebedor PJ recém inserido pelo CNPJ."));
+	    PagarmeRecebedorPj recebedorCriado = recebedorPjRepository.findByCnpj(cnpj).orElseThrow(
+	            () -> new IllegalArgumentException("Erro ao buscar o recebedor PJ recém inserido pelo CNPJ."));
+
+	    
+	    String emailUsuario = recebedorCriado.getPagarmeRecebedor().getUsuario().getEmail();
+	    String emailRespLegal = cadastroDTO.getEmailRespLegal();
+
+	    Conta conta = contaRepository.findById(headerIdConta)
+	            .orElseThrow(() -> new EntityNotFoundException("Conta não encontrada para o ID: " + headerIdConta));
+	    String nomeUsuario = recebedorCriado.getPagarmeRecebedor().getUsuario().getNomeCompleto();
+	    String nomeParceiro = cadastroDTO.getNomeFantasia();
+	    String linkCadastro = "https://www.youtube.com/";
+	    String linkPlataforma = "https://www.pexels.com/pt-br/procurar/gatos/";
+
+	    String subject = "Cadastro Concluído - Informações Importantes";
+
+	    
+	    try {
+	        emailService.sendEmailPj(headerIdConta, emailUsuario, subject, nomeUsuario, linkCadastro, nomeParceiro);
+	        System.out.println("E-mail enviado com sucesso para " + emailUsuario);
+	    } catch (Exception e) {
+	        System.err.println("Erro ao enviar e-mail para o usuário: " + e.getMessage());
+	    }
+
+	    try {
+	        emailService.sendEmailPjParceiro(headerIdConta, emailRespLegal, subject, linkPlataforma);
+	        System.out.println("E-mail enviado com sucesso para o responsável legal: " + emailRespLegal);
+	    } catch (Exception e) {
+	        System.err.println("Erro ao enviar e-mail para o responsável legal: " + e.getMessage());
+	    }
+
+	    return recebedorCriado;
 	}
+
 
 	public Map<String, Object> formatarRetorno(PagarmeRecebedorPj recebedor) {
 

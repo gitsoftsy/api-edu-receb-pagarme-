@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        .email-header {
+            text-align: center;
+            background-color: #4CAF50;
+            color: #fff;
+            padding: 10px;
+            border-radius: 8px 8px 0 0;
+        }
+        .email-body {
+            padding: 20px;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="email-body">
+            <p><strong>{{nomeUsuario}},</strong></p>
+            <p>O parceiro <strong>{{nomeParceiro}}</strong> completou o seu cadastro na plataforma.</p>
+            <p>Agora ele deve validar o cadastro fazendo o preenchimento do formulário KYC Pagarme.</p>
+            <p>Não precisa se preocupar, quando ele finalizar essa etapa te avisamos aqui por e-mail.</p>
+            <p>Até logo!</p>
+        </div>
+    </div>
+</body>
+</html>
