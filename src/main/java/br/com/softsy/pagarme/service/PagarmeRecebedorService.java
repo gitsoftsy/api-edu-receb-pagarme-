@@ -19,6 +19,9 @@ import br.com.softsy.pagarme.repository.PagarmeRecebedorRepository;
 import br.com.softsy.pagarme.repository.RecebedorTempRepository;
 import br.com.softsy.pagarme.repository.ContaRepository;
 import br.com.softsy.pagarme.response.EmailResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 @Service
 public class PagarmeRecebedorService {
@@ -35,9 +38,9 @@ public class PagarmeRecebedorService {
 	@Autowired
 	private ContaRepository contaRepository;
 
-	public List<PagarmeRecebedor> listarTudo() {
-		return repository.findAll();
-	}
+	   public Page<PagarmeRecebedor> listarTudo(Pageable pageable) {
+	        return repository.findAll(pageable);
+	    }
 
 	public EmailResponse verificarEmail(String email, Long idConta) {
 

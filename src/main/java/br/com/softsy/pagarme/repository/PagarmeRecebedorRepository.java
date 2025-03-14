@@ -10,6 +10,9 @@ import org.springframework.stereotype.Repository;
 
 import br.com.softsy.pagarme.model.PagarmeRecebedor;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 @Repository
 public interface PagarmeRecebedorRepository extends JpaRepository<PagarmeRecebedor, Long> {
 
@@ -32,4 +35,6 @@ public interface PagarmeRecebedorRepository extends JpaRepository<PagarmeRecebed
     boolean existsByConta_IdConta(Long idConta);
     
     boolean existsByEmail(String email);
+    
+    Page<PagarmeRecebedor> findAll(Pageable pageable);
 }

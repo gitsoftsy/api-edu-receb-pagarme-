@@ -22,6 +22,9 @@ import br.com.softsy.pagarme.model.PagarmeRecebedor;
 import br.com.softsy.pagarme.response.EmailResponse;
 import br.com.softsy.pagarme.service.PagarmeRecebedorService;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 @RestController
 @RequestMapping("/pagarmeRecebedor")
 public class PagarmeRecebedorController {
@@ -29,10 +32,11 @@ public class PagarmeRecebedorController {
 	@Autowired
 	private PagarmeRecebedorService service;
 
-	@GetMapping
-	public ResponseEntity<List<PagarmeRecebedor>> listar() {
-		return ResponseEntity.ok(service.listarTudo());
-	}
+	   @GetMapping
+	    public ResponseEntity<Page<PagarmeRecebedor>> listar(Pageable pageable) {
+	        Page<PagarmeRecebedor> recebedores = service.listarTudo(pageable);
+	        return ResponseEntity.ok(recebedores);
+	    }
 
 	@GetMapping("/recebedores/existByEmail")
 	public ResponseEntity<EmailResponse> verificarEmail(
