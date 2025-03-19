@@ -38,7 +38,7 @@ public class RecebedorAutenticador implements Autenticador {
 			Long idConta = recebedorTemp.getConta() != null ? recebedorTemp.getConta().getIdConta() : null;
 
 			return new RecebedorLoginDTO(recebedorTemp.getIdRecebedorTemp(), recebedorTemp.getNome(),
-					recebedorTemp.getDocumento(), "Temporária", idConta
+					recebedorTemp.getDocumento(), "Temporária", idConta, "Temporário"
 
 			);
 		}
@@ -53,6 +53,7 @@ public class RecebedorAutenticador implements Autenticador {
 
 			String nome = null;
 			String documento = null;
+			String nomeFantasia = null;
 
 			if (recebedor.getPagarmeRecebedorPjRespLegal() != null) {
 				nome = recebedor.getPagarmeRecebedorPjRespLegal().getNomeRespLegal();
@@ -62,9 +63,14 @@ public class RecebedorAutenticador implements Autenticador {
 				documento = recebedor.getPagarmeRecebedorPj().getCnpj();
 			}
 
+			if (recebedor.getPagarmeRecebedorPj() != null) {
+				nomeFantasia = recebedor.getPagarmeRecebedorPj().getNomeFantasia();
+			}
+
 			Long idConta = recebedor.getConta() != null ? recebedor.getConta().getIdConta() : null;
 
-			return new RecebedorLoginDTO(recebedor.getIdPagarmeRecebedor(), nome, documento, "Principal", idConta
+			return new RecebedorLoginDTO(recebedor.getIdPagarmeRecebedor(), nome, documento, "Principal", idConta,
+					nomeFantasia
 
 			);
 		}

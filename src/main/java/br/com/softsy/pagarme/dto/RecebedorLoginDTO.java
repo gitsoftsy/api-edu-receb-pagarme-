@@ -14,6 +14,7 @@ public class RecebedorLoginDTO {
 	private String documento;
 	private String tabela;
 	private Long idConta;
+	private String nomeFantasia;
 
 	public RecebedorLoginDTO(RecebedorLoginDTO recebedor) {
 		this.idRecebedor = recebedor.getIdRecebedor();
@@ -21,5 +22,6 @@ public class RecebedorLoginDTO {
 		this.documento = recebedor.getDocumento();
 		this.tabela = recebedor.getTabela();
 		this.idConta = recebedor.getIdConta();
+		this.nomeFantasia = recebedor.getNomeFantasia();
 	}
 }
