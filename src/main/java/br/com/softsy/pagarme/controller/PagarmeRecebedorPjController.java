@@ -32,28 +32,24 @@ public class PagarmeRecebedorPjController {
 	@Autowired
 	private PagarmeRecebedorPjService recebedorPjService;
 
-
 	@GetMapping("recebedores/existByCnpj")
 	public ResponseEntity<CnpjResponse> verificarCnpj(@RequestHeader(value = "idConta", required = false) Long idConta,
-	        @RequestParam(value = "cnpj", required = false) String cnpj) {
+			@RequestParam(value = "cnpj", required = false) String cnpj) {
 
-	    if (idConta == null) {
-	
-	        return ResponseEntity.ok(new CnpjResponse(false, null, null, "O header 'idConta' é obrigatório."));
-	    }
+		if (idConta == null) {
 
-	    if (cnpj == null || cnpj.trim().isEmpty()) {
-	       
-	        return ResponseEntity.ok(new CnpjResponse(false, null, null, "O parâmetro 'cnpj' é obrigatório."));
-	    }
+			return ResponseEntity.ok(new CnpjResponse(false, null, null, "O header 'idConta' é obrigatório."));
+		}
 
-	    // Chama o serviço para verificar o CNPJ e retorna a resposta
-	    CnpjResponse response = recebedorPjService.verificarCnpj(cnpj, idConta);
-	    
-	    // Se o serviço retornar encontrado: false (caso erro), ele será passado direto na resposta
-	    return ResponseEntity.ok(response);
+		if (cnpj == null || cnpj.trim().isEmpty()) {
+
+			return ResponseEntity.ok(new CnpjResponse(false, null, null, "O parâmetro 'cnpj' é obrigatório."));
+		}
+
+		CnpjResponse response = recebedorPjService.verificarCnpj(cnpj, idConta);
+
+		return ResponseEntity.ok(response);
 	}
-
 
 	@PostMapping
 	public ResponseEntity<Map<String, Object>> inserirRecebedorPJ(
