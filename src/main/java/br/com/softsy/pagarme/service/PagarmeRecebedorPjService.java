@@ -34,7 +34,7 @@ public class PagarmeRecebedorPjService {
 
 	@Autowired
 	private ContaRepository contaRepository;
-	
+
 	@Autowired
 	private EmailService emailService;
 
@@ -48,20 +48,23 @@ public class PagarmeRecebedorPjService {
 	private BancoRepository bancoRepository;
 
 	public CnpjResponse verificarCnpj(String cnpj, Long idConta) {
-
 		if (!contaRepository.existsById(idConta)) {
-			throw new IllegalArgumentException("Conta inválida ou inexistente.");
+
+			return new CnpjResponse(false, null, null, "Conta inválida ou inexistente.");
 		}
 
 		boolean contaExisteEmRecebedorTemp = recebedorTempRepository.existsByConta_IdConta(idConta);
 		boolean contaExisteEmPagarmeRecebedorPj = recebedorPjRepository.existsByConta_IdConta(idConta);
 
 		if (!contaExisteEmRecebedorTemp && !contaExisteEmPagarmeRecebedorPj) {
-			throw new IllegalArgumentException("ID da conta não encontrado em nenhuma tabela de recebedores.");
+
+			return new CnpjResponse(false, null, null, "ID da conta não encontrado em nenhuma tabela de recebedores.");
 		}
 
 		if (cnpj == null || cnpj.trim().length() != 14 || !cnpj.matches("\\d{14}")) {
-			throw new IllegalArgumentException("CNPJ inválido. O CNPJ deve conter exatamente 14 dígitos numéricos.");
+
+			return new CnpjResponse(false, null, null,
+					"CNPJ inválido. O CNPJ deve conter exatamente 14 dígitos numéricos.");
 		}
 
 		return recebedorTempRepository.findByDocumento(cnpj)
@@ -70,7 +73,8 @@ public class PagarmeRecebedorPjService {
 				.orElseGet(() -> recebedorPjRepository.findByCnpj(cnpj)
 						.map(pagarmeRecebedorPj -> new CnpjResponse(true, pagarmeRecebedorPj.getIdPagarmeRecebedorPj(),
 								"TBL_PAGARME_RECEBEDOR_PJ", "Dados encontrados"))
-						.orElseThrow(() -> new IllegalArgumentException("CNPJ não encontrado em nenhuma tabela.")));
+						.orElse(new CnpjResponse(false, null, null, "CNPJ não encontrado em nenhuma tabela.")));
+
 	}
 
 	private void validarIdsExistentes(CadastroPagarmeRecebedorPjDTO cadastroDTO) {
@@ -121,67 +125,64 @@ public class PagarmeRecebedorPjService {
 
 	@Transactional
 	public PagarmeRecebedorPj inserirRecebedorPJ(Long idRecebedorTemp, Long headerIdConta,
-	        CadastroPagarmeRecebedorPjDTO cadastroDTO) {
+			CadastroPagarmeRecebedorPjDTO cadastroDTO) {
 
-	    if (idRecebedorTemp == null) {
-	        throw new IllegalArgumentException("O ID do Recebedor Temporário não pode ser nulo.");
-	    }
+		if (idRecebedorTemp == null) {
+			throw new IllegalArgumentException("O ID do Recebedor Temporário não pode ser nulo.");
+		}
 
-	    validarIdsExistentes(cadastroDTO);
+		validarIdsExistentes(cadastroDTO);
 
-	    RecebedorTemp recebedorTemp = recebedorTempRepository.findById(idRecebedorTemp)
-	            .orElseThrow(() -> new IllegalArgumentException("Registro temporário não encontrado."));
+		RecebedorTemp recebedorTemp = recebedorTempRepository.findById(idRecebedorTemp)
+				.orElseThrow(() -> new IllegalArgumentException("Registro temporário não encontrado."));
 
-	    Long idContaFromTemp = recebedorTemp.getConta().getIdConta();
+		Long idContaFromTemp = recebedorTemp.getConta().getIdConta();
 
-	    if (!headerIdConta.equals(idContaFromTemp)) {
-	        throw new IllegalArgumentException(
-	                "O idConta informado no header não coincide com o registrado no Recebedor Temporário.");
-	    }
+		if (!headerIdConta.equals(idContaFromTemp)) {
+			throw new IllegalArgumentException(
+					"O idConta informado no header não coincide com o registrado no Recebedor Temporário.");
+		}
 
-	    String cnpj = recebedorTempRepository.findCnpjByRecebedorTempId(idRecebedorTemp).orElseThrow(
-	            () -> new IllegalArgumentException("Não foi possível encontrar o CNPJ do Recebedor Temporário."));
+		String cnpj = recebedorTempRepository.findCnpjByRecebedorTempId(idRecebedorTemp).orElseThrow(
+				() -> new IllegalArgumentException("Não foi possível encontrar o CNPJ do Recebedor Temporário."));
 
-	    if (recebedorPjRepository.existsByCnpj(cnpj)) {
-	        throw new IllegalArgumentException("Já existe um recebedor PJ com o CNPJ informado.");
-	    }
+		if (recebedorPjRepository.existsByCnpj(cnpj)) {
+			throw new IllegalArgumentException("Já existe um recebedor PJ com o CNPJ informado.");
+		}
 
-	    executarProcedureInsercaoRecebedorPj(cadastroDTO);
+		executarProcedureInsercaoRecebedorPj(cadastroDTO);
 
-	    PagarmeRecebedorPj recebedorCriado = recebedorPjRepository.findByCnpj(cnpj).orElseThrow(
-	            () -> new IllegalArgumentException("Erro ao buscar o recebedor PJ recém inserido pelo CNPJ."));
+		PagarmeRecebedorPj recebedorCriado = recebedorPjRepository.findByCnpj(cnpj).orElseThrow(
+				() -> new IllegalArgumentException("Erro ao buscar o recebedor PJ recém inserido pelo CNPJ."));
 
-	    
-	    String emailUsuario = recebedorCriado.getPagarmeRecebedor().getUsuario().getEmail();
-	    String emailRespLegal = cadastroDTO.getEmailRespLegal();
+		String emailUsuario = recebedorCriado.getPagarmeRecebedor().getUsuario().getEmail();
+		String emailRespLegal = cadastroDTO.getEmailRespLegal();
 
-	    Conta conta = contaRepository.findById(headerIdConta)
-	            .orElseThrow(() -> new EntityNotFoundException("Conta não encontrada para o ID: " + headerIdConta));
-	    String nomeUsuario = recebedorCriado.getPagarmeRecebedor().getUsuario().getNomeCompleto();
-	    String nomeParceiro = cadastroDTO.getNomeFantasia();
-	    String linkCadastro = "https://www.youtube.com/";
-	    String linkPlataforma = "https://www.pexels.com/pt-br/procurar/gatos/";
+		Conta conta = contaRepository.findById(headerIdConta)
+				.orElseThrow(() -> new EntityNotFoundException("Conta não encontrada para o ID: " + headerIdConta));
+		String nomeUsuario = recebedorCriado.getPagarmeRecebedor().getUsuario().getNomeCompleto();
+		String nomeParceiro = cadastroDTO.getNomeFantasia();
+		String linkCadastro = "https://www.youtube.com/";
+		String linkPlataforma = "https://www.pexels.com/pt-br/procurar/gatos/";
 
-	    String subject = "Cadastro Concluído - Informações Importantes";
+		String subject = "Cadastro Concluído - Informações Importantes";
 
-	    
-	    try {
-	        emailService.sendEmailPj(headerIdConta, emailUsuario, subject, nomeUsuario, linkCadastro, nomeParceiro);
-	        System.out.println("E-mail enviado com sucesso para " + emailUsuario);
-	    } catch (Exception e) {
-	        System.err.println("Erro ao enviar e-mail para o usuário: " + e.getMessage());
-	    }
+		try {
+			emailService.sendEmailPj(headerIdConta, emailUsuario, subject, nomeUsuario, linkCadastro, nomeParceiro);
+			System.out.println("E-mail enviado com sucesso para " + emailUsuario);
+		} catch (Exception e) {
+			System.err.println("Erro ao enviar e-mail para o usuário: " + e.getMessage());
+		}
 
-	    try {
-	        emailService.sendEmailPjParceiro(headerIdConta, emailRespLegal, subject, linkPlataforma);
-	        System.out.println("E-mail enviado com sucesso para o responsável legal: " + emailRespLegal);
-	    } catch (Exception e) {
-	        System.err.println("Erro ao enviar e-mail para o responsável legal: " + e.getMessage());
-	    }
+		try {
+			emailService.sendEmailPjParceiro(headerIdConta, emailRespLegal, subject, linkPlataforma);
+			System.out.println("E-mail enviado com sucesso para o responsável legal: " + emailRespLegal);
+		} catch (Exception e) {
+			System.err.println("Erro ao enviar e-mail para o responsável legal: " + e.getMessage());
+		}
 
-	    return recebedorCriado;
+		return recebedorCriado;
 	}
-
 
 	public Map<String, Object> formatarRetorno(PagarmeRecebedorPj recebedor) {
 
