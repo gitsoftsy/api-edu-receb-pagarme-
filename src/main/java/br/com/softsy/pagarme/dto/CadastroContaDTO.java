@@ -49,8 +49,6 @@ public class CadastroContaDTO {
 	private LocalDateTime dataCadastro;
 	
 	private Character ativo;
-
-	private String logoConta;
 	
 	public CadastroContaDTO(Conta conta) {
 		this.idConta = conta.getIdConta();
@@ -67,7 +65,6 @@ public class CadastroContaDTO {
 		this.uf = conta.getUf();
 		this.ativo = conta.getAtivo();
 		this.dataCadastro = conta.getDataCadastro();
-		this.logoConta = conta.getLogoConta();
 	}
 
 }
