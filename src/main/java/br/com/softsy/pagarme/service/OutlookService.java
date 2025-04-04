@@ -47,7 +47,7 @@ public class OutlookService implements EmailService {
         props.put("mail.smtp.starttls.enable", "true");
         props.put("mail.smtp.ssl.protocols", "TLSv1.2");
 
-        EmailAuthenticator authenticator = new EmailAuthenticator(provedorEmailContaOutlook.getUsername(), "#@Sum@re#@");
+        EmailAuthenticator authenticator = new EmailAuthenticator(provedorEmailContaOutlook.getUsername(), provedorEmailContaOutlook.getSenha());
         Session session = Session.getInstance(props, authenticator);
 
         // 🔄 Carregar template HTML do classpath
@@ -96,7 +96,7 @@ public class OutlookService implements EmailService {
 	    props.put("mail.smtp.starttls.enable", "true");
 	    props.put("mail.smtp.ssl.protocols", "TLSv1.2");
 
-	    EmailAuthenticator authenticator = new EmailAuthenticator(provedorEmailContaOutlook.getUsername(), "#@Sum@re#@");
+	    EmailAuthenticator authenticator = new EmailAuthenticator(provedorEmailContaOutlook.getUsername(), provedorEmailContaOutlook.getSenha());
 	    Session session = Session.getInstance(props, authenticator);
 
 	    // 🔄 Carregar template HTML corretamente
@@ -140,7 +140,7 @@ public class OutlookService implements EmailService {
 	    props.put("mail.smtp.starttls.enable", "true");
 	    props.put("mail.smtp.ssl.protocols", "TLSv1.2");
 
-	    EmailAuthenticator authenticator = new EmailAuthenticator(provedorEmailContaOutlook.getUsername(), "#@Sum@re#@");
+	    EmailAuthenticator authenticator = new EmailAuthenticator(provedorEmailContaOutlook.getUsername(), provedorEmailContaOutlook.getSenha());
 	    Session session = Session.getInstance(props, authenticator);
 
 	    // 🔄 Carregar template HTML corretamente
